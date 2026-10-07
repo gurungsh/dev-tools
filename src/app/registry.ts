@@ -1,5 +1,5 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
-import { IconFingerprint, IconBraces, IconGitCompare, IconChartDots3, type Icon } from '@tabler/icons-react';
+import { IconFingerprint, IconBraces, IconGitCompare, IconChartDots3, IconSend, type Icon } from '@tabler/icons-react';
 
 export interface ToolDefinition {
   id: string;
@@ -46,6 +46,14 @@ export const tools: ToolDefinition[] = [
     description: 'Live-render Mermaid diagrams offline and export as SVG or PNG.',
     icon: IconChartDots3,
     component: lazy(() => import('../tools/mermaid/MermaidTool')),
+  },
+  {
+    id: 'request',
+    path: '/request',
+    label: 'Request Generator',
+    description: 'Generate dummy request bodies from sample JSON or a Swagger/OpenAPI endpoint, with cURL and fetch snippets.',
+    icon: IconSend,
+    component: lazy(() => import('../tools/request/RequestTool')),
   },
 ];
 

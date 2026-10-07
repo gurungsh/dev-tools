@@ -1,5 +1,5 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
-import { IconFingerprint, IconBraces, type Icon } from '@tabler/icons-react';
+import { IconFingerprint, IconBraces, IconGitCompare, type Icon } from '@tabler/icons-react';
 
 export interface ToolDefinition {
   id: string;
@@ -30,6 +30,14 @@ export const tools: ToolDefinition[] = [
     description: 'Format, validate and minify JSON, YAML, XML, HTML, CSS, Markdown, SQL and Mermaid.',
     icon: IconBraces,
     component: lazy(() => import('../tools/formatter/FormatterTool')),
+  },
+  {
+    id: 'diff',
+    path: '/diff',
+    label: 'Diff Checker',
+    description: 'Compare two texts or files side by side or inline, with word-level highlights.',
+    icon: IconGitCompare,
+    component: lazy(() => import('../tools/diff/DiffTool')),
   },
 ];
 

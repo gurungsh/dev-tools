@@ -1,0 +1,24 @@
+/* Maps the active theme's palette onto Mantine surfaces. Must load after Mantine's styles. */
+.mantine-AppShell-header,
+.mantine-AppShell-navbar {
+  background-color: var(--app-panel);
+  border-color: var(--app-border);
+}
+.mantine-Card-root,
+.mantine-Paper-root {
+  background-color: var(--app-panel);
+}
+.mantine-Input-input[data-variant='default'],
+.mantine-Select-input[data-variant='default'] {
+  --input-bg: var(--app-panel);
+}
+.mantine-NavLink-root[data-active] {
+  background-color: var(--app-hover);
+  color: var(--app-text);
+}
+.mantine-NavLink-root:hover {
+  background-color: var(--app-hover);
+}
+.mantine-Title-root {
+  font-weight: 500;
+}

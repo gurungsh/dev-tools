@@ -1,6 +1,8 @@
 import CodeMirror from '@uiw/react-codemirror';
 import type { Extension } from '@codemirror/state';
-import { useComputedColorScheme } from '@mantine/core';
+import { useMemo } from 'react';
+import { useAppTheme } from '../themes/ThemeProvider';
+import { codeMirrorTheme } from './codeMirrorTheme';
 
 export interface CodeEditorProps {
   value: string;
@@ -13,7 +15,8 @@ export interface CodeEditorProps {
 }
 
 export function CodeEditor({ value, onChange, extensions, readOnly, height, minHeight = '300px', placeholder }: CodeEditorProps) {
-  const scheme = useComputedColorScheme('light');
+  const { def, mode } = useAppTheme();
+  const cmTheme = useMemo(() => codeMirrorTheme(def, mode), [def, mode]);
   return (
     <CodeMirror
       value={value}
@@ -24,7 +27,7 @@ export function CodeEditor({ value, onChange, extensions, readOnly, height, minH
       height={height}
       minHeight={minHeight}
       placeholder={placeholder}
-      theme={scheme}
+      theme={cmTheme}
       basicSetup={{ foldGutter: true, highlightActiveLine: !readOnly }}
       style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 4, overflow: 'hidden' }}
     />

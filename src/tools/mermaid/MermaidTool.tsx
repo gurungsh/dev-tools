@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Button, Grid, Group, Loader, Select, Stack, Text, Title, ActionIcon, Box, useComputedColorScheme } from '@mantine/core';
+import { Alert, Button, Grid, Group, Loader, Select, Stack, Text, Title, ActionIcon, Box } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
+import { useAppTheme } from '../../themes/ThemeProvider';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle, IconDownload, IconWand, IconZoomIn, IconZoomOut, IconZoomReset } from '@tabler/icons-react';
 import { CodeEditor } from '../../components/CodeEditor';
@@ -11,7 +12,7 @@ import { MERMAID_SAMPLES } from '../../lib/mermaidSamples';
 import { renderMermaid, svgToPng } from '../../lib/mermaidRender';
 
 export default function MermaidTool() {
-  const scheme = useComputedColorScheme('light');
+  const { mode: scheme, palette } = useAppTheme();
   const [code, setCode] = useLocalStorage({ key: 'mermaid:code', defaultValue: MERMAID_SAMPLES[0].code });
   const [svg, setSvg] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +44,7 @@ export default function MermaidTool() {
 
   const exportPng = async () => {
     try {
-      const blob = await svgToPng(svg, 2, scheme === 'dark' ? '#1a1b1e' : '#ffffff');
+      const blob = await svgToPng(svg, 2, palette.panel);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

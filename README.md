@@ -38,8 +38,25 @@ These rules keep the app usable with no internet:
 | Diff | `diff` (jsdiff) and `@codemirror/merge` | Line and word level, side-by-side view |
 | Sample data | Own seeded generator (`src/lib/sampleGen.ts`) | Schema/OpenAPI to dummy values, repeatable via seed |
 | GUID | `crypto.randomUUID()` with a `crypto.getRandomValues` fallback | No extra dependency |
-| UI | Mantine 8 | Light/dark theme, bundled locally (no CDN fonts) |
+| UI | Mantine 8 | Theming via `createTheme`; fonts bundled with `@fontsource` (no CDN) |
 | Tests | Vitest | Unit tests for all `src/lib` logic |
+
+## Themes
+
+Pick a theme and light/dark/system mode from the bottom of the sidebar; choices are remembered.
+
+| Theme | Look |
+|-------|------|
+| Slate | Neutral with a blue accent (default) |
+| Paper | Warm cream, serif headings, terracotta accent |
+| Terminal | All monospace, phosphor green, square corners |
+| Editor | Code-editor greys, blue accent |
+| Repo | Code-hosting look, green primary action |
+| Mono | Black and white, hairline borders |
+| Workspace | Soft and quiet, notes-app feel |
+| macOS style | System fonts, rounded controls, blue selection |
+
+Each theme lives in `src/themes/defs/<id>.ts` (palette for light and dark, fonts, radius, logo). To add one, create a def, list it in `src/themes/index.ts`, add a `__THEME_<ID>__` flag in `vite.config.ts` and `src/themes/globals.d.ts`. Contrast of every palette is checked by `tests/themes.test.ts`.
 
 ## Proposed structure
 
@@ -53,6 +70,7 @@ dev-tools/
 │  │  ├─ diff/
 │  │  ├─ guid/
 │  │  └─ mermaid/
+│  ├─ themes/           # theme defs, provider, switcher, logo
 │  ├─ components/       # CodeEditor, CopyButton, OpenFileButton
 │  ├─ lib/              # pure functions (format, sample, diff)
 │  └─ main.tsx
@@ -121,6 +139,12 @@ Each tool is a self-contained module registered in one tool registry, so adding 
 - [x] Persist per-tool state across sessions (localStorage)
 - [ ] Accessibility pass and responsive layout
 - [ ] Playwright offline smoke tests for every tool
+
+### Phase 7 - Themes and desktop app
+- [x] Eight themes (Slate, Paper, Terminal, Editor, Repo, Mono, Workspace, macOS style), each with light and dark
+- [x] Theme picker and light/dark/system toggle at the bottom of the sidebar
+- [x] Fonts bundled locally via `@fontsource` (no network); themes and fonts not selected for a build are tree-shaken out
+- [ ] Desktop packaging for macOS and Windows with a `--theme` option
 
 ### Ideas / backlog
 - Base64, URL encode/decode, JWT decoder

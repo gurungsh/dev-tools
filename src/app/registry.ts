@@ -1,5 +1,5 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
-import { IconFingerprint, IconBraces, IconGitCompare, type Icon } from '@tabler/icons-react';
+import { IconFingerprint, IconBraces, IconGitCompare, IconChartDots3, type Icon } from '@tabler/icons-react';
 
 export interface ToolDefinition {
   id: string;
@@ -38,6 +38,14 @@ export const tools: ToolDefinition[] = [
     description: 'Compare two texts or files side by side or inline, with word-level highlights.',
     icon: IconGitCompare,
     component: lazy(() => import('../tools/diff/DiffTool')),
+  },
+  {
+    id: 'mermaid',
+    path: '/mermaid',
+    label: 'Mermaid Renderer',
+    description: 'Live-render Mermaid diagrams offline and export as SVG or PNG.',
+    icon: IconChartDots3,
+    component: lazy(() => import('../tools/mermaid/MermaidTool')),
   },
 ];
 

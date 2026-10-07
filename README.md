@@ -30,16 +30,16 @@ These rules keep the app usable with no internet:
 |---------|--------|-------|
 | Framework | React 18 + TypeScript | |
 | Build | Vite | `base: './'` so it works from any path |
-| Routing | `react-router` with `HashRouter` | Works on static hosting and `file://` |
+| Routing | `react-router-dom` with `HashRouter` | Works on static hosting and `file://` |
 | Editor | CodeMirror 6 | Lightweight, no web workers or CDN loading (Monaco is harder to run offline) |
-| Formatting | `prettier` (standalone) + `@prettier/plugin-xml` | JSON, YAML, XML, HTML, CSS, Markdown |
+| Formatting | `prettier` (standalone) + `@prettier/plugin-xml`, `sql-formatter` | XML, HTML, CSS, Markdown, SQL (JSON uses `JSON.stringify`, YAML uses `yaml`) |
 | YAML parsing | `yaml` | Validation and JSON <-> YAML conversion |
 | Mermaid | `mermaid` | Rendering. Formatting is a small custom indenter since Prettier has no Mermaid support |
 | Diff | `diff` (jsdiff) and `@codemirror/merge` | Line and word level, side-by-side view |
-| Sample data | `openapi-sampler` or `json-schema-faker` | Schema to example body |
+| Sample data | Own seeded generator (`src/lib/sampleGen.ts`) | Schema/OpenAPI to dummy values, repeatable via seed |
 | GUID | `crypto.randomUUID()` with a `crypto.getRandomValues` fallback | No extra dependency |
-| Styling | CSS modules or Tailwind (bundled, not CDN) | Light and dark theme |
-| Tests | Vitest + Testing Library | Plus Playwright smoke test run offline |
+| UI | Mantine 8 | Light/dark theme, bundled locally (no CDN fonts) |
+| Tests | Vitest | Unit tests for all `src/lib` logic |
 
 ## Proposed structure
 
@@ -53,9 +53,10 @@ dev-tools/
 │  │  ├─ diff/
 │  │  ├─ guid/
 │  │  └─ mermaid/
-│  ├─ components/       # CodeEditor, FileDrop, CopyButton, SplitPane
+│  ├─ components/       # CodeEditor, CopyButton, OpenFileButton
 │  ├─ lib/              # pure functions (format, sample, diff), unit tested
 │  └─ main.tsx
+├─ scripts/check-offline.mjs
 ├─ index.html
 ├─ vite.config.ts
 └─ README.md
@@ -66,56 +67,57 @@ Each tool is a self-contained module registered in one tool registry, so adding 
 ## Roadmap
 
 ### Phase 0 - Scaffold
-- [ ] Vite + React + TypeScript project, ESLint, Prettier, Vitest
-- [ ] App shell: sidebar navigation, hash routing, light/dark theme
-- [ ] Shared `CodeEditor` (CodeMirror), copy/download/upload helpers
-- [ ] Tool registry and lazy-loaded routes
-- [ ] Offline guard: lint rule or CI check that fails on `http(s)://` asset references in the build output
+- [x] Vite + React + TypeScript project, ESLint, Prettier, Vitest
+- [x] App shell: sidebar navigation, hash routing, light/dark theme
+- [x] Shared `CodeEditor` (CodeMirror), copy/download/upload helpers
+- [x] Tool registry and lazy-loaded routes
+- [x] Offline guard: lint rule or CI check that fails on `http(s)://` asset references in the build output
 
 ### Phase 1 - GUID generator (quick win)
-- [ ] Generate v4 UUIDs, with count (1 to 1000)
-- [ ] Options: uppercase, no hyphens, braces, quotes, comma separated
-- [ ] Copy one or copy all
-- [ ] Optional: v7 (time-ordered), nil UUID, validator
+- [x] Generate v4 UUIDs, with count (1 to 1000)
+- [x] Options: uppercase, no hyphens, braces, quotes, comma separated
+- [x] Copy one or copy all
+- [x] Optional: v7 (time-ordered), nil UUID, validator
 
 ### Phase 2 - Formatter
-- [ ] JSON: format, minify, validate with line/column errors, sort keys
-- [ ] YAML: format and validate, YAML <-> JSON conversion
-- [ ] XML: format and validate, configurable indent
-- [ ] Mermaid: basic indentation normaliser
-- [ ] Auto-detect input type, indent size setting, drag-and-drop file open
-- [ ] Later: HTML, CSS, Markdown, SQL
+- [x] JSON: format, minify, validate with line/column errors, sort keys
+- [x] YAML: format and validate, YAML <-> JSON conversion
+- [x] XML: format and validate, configurable indent
+- [x] Mermaid: basic indentation normaliser
+- [x] Auto-detect input type, indent size setting, file open
+- [ ] Drag-and-drop file open
+- [x] HTML, CSS, Markdown, SQL
 
 ### Phase 3 - Diff checker
-- [ ] Two-pane input with paste or file open
-- [ ] Side-by-side and inline views
-- [ ] Options: ignore whitespace, ignore case, word vs line diff
-- [ ] Format both sides before diffing (reuses the Formatter), useful for JSON/YAML
-- [ ] Stats (added, removed, changed) and copy as unified diff
+- [x] Two-pane input with paste or file open
+- [x] Side-by-side and inline views
+- [x] Options: ignore whitespace, ignore case, word vs line diff
+- [x] Format both sides before diffing (reuses the Formatter), useful for JSON/YAML
+- [x] Stats (added, removed, changed) and copy as unified diff
 
 ### Phase 4 - Mermaid renderer
-- [ ] Editor with live preview, debounced
-- [ ] Syntax error display
-- [ ] Theme selection, pan and zoom
-- [ ] Export SVG and PNG
-- [ ] Sample diagram gallery (flowchart, sequence, ER, class, Gantt)
+- [x] Editor with live preview, debounced
+- [x] Syntax error display
+- [ ] Pan (zoom is done; theme follows the app light/dark setting)
+- [x] Export SVG and PNG
+- [x] Sample diagram gallery (flowchart, sequence, ER, class, Gantt)
 - [ ] Confirm Mermaid runs with zero network access (no CDN icon packs or fonts)
 
 ### Phase 5 - Request generator
-- [ ] Two input modes, switchable in the UI:
+- [x] Two input modes, switchable in the UI:
   - **From sample JSON:** infer a schema from the pasted payload (types, nesting, arrays), then generate new dummy values with the same shape
   - **From OpenAPI/Swagger (JSON or YAML, v2 and v3):** pick an endpoint and method, then generate the request body, plus query/path/header parameters, from its schema
-- [ ] Generate realistic dummy bodies from schema types, formats (date-time, email, uuid), enums and constraints
-- [ ] Options: seed for repeatable output, include optional fields, array length
-- [ ] Output: JSON body, plus `curl` and `fetch` snippets
-- [ ] Bulk generation (N variations)
-- [ ] Support `$ref` resolution, `allOf`/`oneOf`
+- [x] Generate realistic dummy bodies from schema types, formats (date-time, email, uuid), enums and constraints
+- [x] Options: seed for repeatable output, include optional fields, array length
+- [x] Output: JSON body, plus `curl` and `fetch` snippets
+- [x] Bulk generation (N variations)
+- [x] Support local `$ref` resolution, `allOf`/`oneOf`/`anyOf`
 
 ### Phase 6 - Polish and distribution
-- [ ] Single-file build (`npm run build:single`) producing one portable `index.html`
+- [x] Single-file build (`npm run build:single`) producing one portable `index.html`
 - [ ] Optional PWA service worker so it can be installed and used offline
 - [ ] Keyboard shortcuts and a command palette to jump between tools
-- [ ] Persist per-tool state across sessions
+- [x] Persist per-tool state across sessions (localStorage)
 - [ ] Accessibility pass and responsive layout
 - [ ] Playwright offline smoke tests for every tool
 
@@ -127,16 +129,24 @@ Each tool is a self-contained module registered in one tool registry, so adding 
 
 ## Getting started
 
-Not yet scaffolded. Planned commands:
+Requires Node 20+.
 
 ```bash
 npm install
-npm run dev            # local dev server
+npm run dev            # local dev server (http://localhost:5173)
 npm run build          # static build in dist/
-npm run build:single   # single self-contained index.html
+npm run build:single   # single self-contained dist-single/index.html
+npm run check:offline  # fail if dist/ references remote assets
 npm run preview        # serve the production build
-npm test
+npm test               # unit tests
+npm run lint
 ```
+
+## Branching
+
+- `main`: stable, only the initial README so far.
+- `dev`: integration branch.
+- `feature/<name>`: one per feature, branched from `dev` and squash-merged back.
 
 ## Known constraints
 

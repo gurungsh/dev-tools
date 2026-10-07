@@ -58,6 +58,42 @@ Pick a theme and light/dark/system mode from the bottom of the sidebar; choices 
 
 Each theme lives in `src/themes/defs/<id>.ts` (palette for light and dark, fonts, radius, logo). To add one, create a def, list it in `src/themes/index.ts`, add a `__THEME_<ID>__` flag in `vite.config.ts` and `src/themes/globals.d.ts`. Contrast of every palette is checked by `tests/themes.test.ts`.
 
+## Desktop app (macOS and Windows)
+
+The same app can be packaged with Electron. The desktop build serves the bundled app from disk and blocks every network request, so it stays fully offline.
+
+```bash
+npm run package                                   # all themes, for the OS you're on
+npm run package -- --theme=paper                  # Paper only (light + dark), no theme picker
+npm run package -- --theme=paper,mono             # two themes with a picker
+npm run package -- --theme=terminal --platform=win
+npm run package -- --platform=all --arch=all      # mac + windows, arm64 + x64
+npm run package -- --dir                          # fast unpacked build for testing
+npm run package -- --list-themes
+npm run desktop                                   # build and run the desktop app locally
+```
+
+| Flag | Values | Default |
+|------|--------|---------|
+| `--theme` | one theme, a comma list, or `all` | `all` |
+| `--platform` | `mac`, `win`, `all` | current OS |
+| `--arch` | `arm64`, `x64`, `all` | mac: this machine's CPU, win: `x64` |
+| `--dir` | unpacked app only | off |
+| `--out` | output folder | `release` |
+
+What a `--theme` choice does:
+- Only the chosen themes (and their fonts) are included in the app, so single-theme installers are smaller.
+- A single theme hides the theme picker; the light/dark/system toggle stays. Several themes show a picker limited to those themes.
+- The app icon is generated from that theme's logo (`all` uses Slate).
+
+Installers land in `release/`, named like `DevTools-0.1.0-paper-mac-arm64.dmg`: `.dmg` and `.zip` for macOS, `.exe` (NSIS installer) and `.zip` for Windows. Windows installers can be built from a Mac.
+
+Notes:
+- Builds are unsigned. On macOS, right-click the app and choose Open the first time (or sign and notarize with an Apple Developer ID). Windows SmartScreen may warn until the installer is code-signed.
+- Unsigned Windows builds also skip embedding the icon in the `.exe` itself (that step needs Wine off Windows); build on Windows to include it.
+- The first packaging run downloads Electron (about 100 MB), so it needs internet once. The packaged app never does.
+- The same `DEVTOOLS_THEMES=paper npm run build` also works for a themed web build.
+
 ## Proposed structure
 
 ```
@@ -75,7 +111,9 @@ dev-tools/
 │  ├─ lib/              # pure functions (format, sample, diff)
 │  └─ main.tsx
 ├─ tests/               # Vitest unit tests for src/lib
-├─ scripts/check-offline.mjs
+├─ electron/            # desktop main process
+├─ scripts/             # package.mjs, make-icon.ts, check-offline.mjs
+├─ config/themes.json   # theme ids shared by build tooling
 ├─ index.html
 ├─ vite.config.ts
 └─ README.md
@@ -144,7 +182,7 @@ Each tool is a self-contained module registered in one tool registry, so adding 
 - [x] Eight themes (Slate, Paper, Terminal, Editor, Repo, Mono, Workspace, macOS style), each with light and dark
 - [x] Theme picker and light/dark/system toggle at the bottom of the sidebar
 - [x] Fonts bundled locally via `@fontsource` (no network); themes and fonts not selected for a build are tree-shaken out
-- [ ] Desktop packaging for macOS and Windows with a `--theme` option
+- [x] Desktop app (Electron) for macOS and Windows with a `--theme` packaging option
 
 ### Ideas / backlog
 - Base64, URL encode/decode, JWT decoder

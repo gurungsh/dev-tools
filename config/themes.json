@@ -1,0 +1,4 @@
+{
+  "ids": ["slate", "paper", "terminal", "editor", "repo", "mono", "workspace", "macos"],
+  "default": "slate"
+}

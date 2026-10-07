@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'r
 import { createTheme, MantineProvider, type CSSVariablesResolver, type MantineColorsTuple } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { darkScale, onColor, shades } from './colors';
+import { resolveLogo } from './logoSvg';
 import { DEFAULT_THEME_ID, getTheme, THEMES } from './index';
 import type { Mode, ModePreference, Palette, ThemeDef, ThemeId } from './types';
 
@@ -63,18 +64,6 @@ function mantineTheme(def: ThemeDef, mode: Mode) {
     headings: { fontFamily: def.fonts.heading ?? def.fonts.sans, fontWeight: '500' },
     defaultRadius: def.radius,
   });
-}
-
-/** Logo markup with --app-* variables replaced, for use outside the DOM (favicon). */
-export function resolveLogo(def: ThemeDef, mode: Mode): string {
-  const p = def[mode];
-  const map: Record<string, string> = {
-    'var(--app-accent)': p.accent,
-    'var(--app-on-accent)': onColor(p.accent),
-    'var(--app-bg)': p.bg,
-    'var(--app-text)': p.text,
-  };
-  return def.logo.replace(/var\(--app-[a-z-]+\)/g, (m) => map[m] ?? m);
 }
 
 export function AppThemeProvider({ children }: { children: ReactNode }) {

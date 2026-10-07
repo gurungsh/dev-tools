@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeDiff, unifiedPatch } from './diff';
+import { computeDiff, unifiedPatch } from '../src/lib/diff';
 
 const o = { ignoreWhitespace: false, ignoreCase: false };
 

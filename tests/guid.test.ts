@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatGuid, generateGuids, inspectGuid, NIL_UUID, uuidV4, uuidV7 } from './guid';
+import { formatGuid, generateGuids, inspectGuid, NIL_UUID, uuidV4, uuidV7 } from '../src/lib/guid';
 
 const opts = { uppercase: false, hyphens: true, braces: false, quotes: false };
 

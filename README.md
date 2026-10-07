@@ -54,8 +54,9 @@ dev-tools/
 │  │  ├─ guid/
 │  │  └─ mermaid/
 │  ├─ components/       # CodeEditor, CopyButton, OpenFileButton
-│  ├─ lib/              # pure functions (format, sample, diff), unit tested
+│  ├─ lib/              # pure functions (format, sample, diff)
 │  └─ main.tsx
+├─ tests/               # Vitest unit tests for src/lib
 ├─ scripts/check-offline.mjs
 ├─ index.html
 ├─ vite.config.ts

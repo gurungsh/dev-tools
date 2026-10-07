@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { buildRequest, parseSpec, SpecError, toCurl, toFetch } from './openapi';
-import { DEFAULT_GEN_OPTIONS } from './sampleGen';
+import { buildRequest, parseSpec, SpecError, toCurl, toFetch } from '../src/lib/openapi';
+import { DEFAULT_GEN_OPTIONS } from '../src/lib/sampleGen';
 
 const v3 = `
 openapi: 3.0.0

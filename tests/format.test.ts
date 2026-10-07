@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { convertJsonYaml, detectLanguage, formatCode, FormatError, minifyCode } from './format';
-import { formatMermaid } from './mermaidFormat';
+import { convertJsonYaml, detectLanguage, formatCode, FormatError, minifyCode } from '../src/lib/format';
+import { formatMermaid } from '../src/lib/mermaidFormat';
 
 const o = { indent: 2 };
 

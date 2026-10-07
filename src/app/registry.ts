@@ -1,5 +1,5 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
-import { IconFingerprint, type Icon } from '@tabler/icons-react';
+import { IconFingerprint, IconBraces, type Icon } from '@tabler/icons-react';
 
 export interface ToolDefinition {
   id: string;
@@ -22,6 +22,14 @@ export const tools: ToolDefinition[] = [
     description: 'Generate v4, v7 or nil UUIDs in bulk with format options.',
     icon: IconFingerprint,
     component: lazy(() => import('../tools/guid/GuidTool')),
+  },
+  {
+    id: 'formatter',
+    path: '/formatter',
+    label: 'Formatter',
+    description: 'Format, validate and minify JSON, YAML, XML, HTML, CSS, Markdown, SQL and Mermaid.',
+    icon: IconBraces,
+    component: lazy(() => import('../tools/formatter/FormatterTool')),
   },
 ];
 

@@ -208,8 +208,8 @@ npm run lint
 ## Branching
 
 - `main`: stable, only the initial README so far.
-- `dev`: integration branch.
-- `feature/<name>`: one per feature, branched from `dev` and squash-merged back.
+- `development`: integration branch.
+- `feature/<name>`: one per feature, branched from `development` and squash-merged back.
 
 ## Known constraints
 

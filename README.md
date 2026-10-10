@@ -43,20 +43,13 @@ These rules keep the app usable with no internet:
 
 ## Themes
 
-Pick a theme and light/dark/system mode from the bottom of the sidebar; choices are remembered.
+Pick a theme and light/dark/system mode from the bottom of the sidebar; choices are remembered. The theme picker only appears when a build has more than one theme.
 
 | Theme | Look |
 |-------|------|
-| Slate | Neutral with a blue accent (default) |
-| Paper | Warm cream, serif headings, terracotta accent |
-| Terminal | All monospace, phosphor green, square corners |
-| Editor | Code-editor greys, blue accent |
-| Repo | Code-hosting look, green primary action |
-| Mono | Black and white, hairline borders |
-| Workspace | Soft and quiet, notes-app feel |
-| macOS style | System fonts, rounded controls, blue selection |
+| Mono | Black and white, hairline borders (default) |
 
-Each theme lives in `src/themes/defs/<id>.ts` (palette for light and dark, fonts, radius, logo). To add one, create a def, list it in `src/themes/index.ts`, add a `__THEME_<ID>__` flag in `vite.config.ts` and `src/themes/globals.d.ts`. Contrast of every palette is checked by `tests/themes.test.ts`.
+Each theme lives in `src/themes/defs/<id>.ts` (palette for light and dark, fonts, radius, logo). To add one, create a def, list it in `src/themes/index.ts` and `scripts/make-icon.ts`, add its id to `ThemeId` in `src/themes/types.ts` and to `config/themes.json` (which drives the `__THEME_<ID>__` flags in `vite.config.ts`), and declare the flag in `src/themes/globals.d.ts`. Contrast of every palette is checked by `tests/themes.test.ts`.
 
 ## Desktop app (macOS and Windows)
 
@@ -64,9 +57,8 @@ The same app can be packaged with Electron. The desktop build serves the bundled
 
 ```bash
 npm run package                                   # all themes, for the OS you're on
-npm run package -- --theme=paper                  # Paper only (light + dark), no theme picker
-npm run package -- --theme=paper,mono             # two themes with a picker
-npm run package -- --theme=terminal --platform=win
+npm run package -- --theme=mono                   # Mono only (light + dark), no theme picker
+npm run package -- --theme=mono --platform=win
 npm run package -- --platform=all --arch=all      # mac + windows, arm64 + x64
 npm run package -- --dir                          # fast unpacked build for testing
 npm run package -- --list-themes
@@ -84,15 +76,15 @@ npm run desktop                                   # build and run the desktop ap
 What a `--theme` choice does:
 - Only the chosen themes (and their fonts) are included in the app, so single-theme installers are smaller.
 - A single theme hides the theme picker; the light/dark/system toggle stays. Several themes show a picker limited to those themes.
-- The app icon is generated from that theme's logo (`all` uses Slate).
+- The app icon is generated from that theme's logo (`all` uses the default theme from `config/themes.json`).
 
-Installers land in `release/`, named like `DevTools-0.1.0-paper-mac-arm64.dmg`: `.dmg` and `.zip` for macOS, `.exe` (NSIS installer) and `.zip` for Windows. Windows installers can be built from a Mac.
+Installers land in `release/`, named like `DevTools-0.1.0-mono-mac-arm64.dmg`: `.dmg` and `.zip` for macOS, `.exe` (NSIS installer) and `.zip` for Windows. Windows installers can be built from a Mac.
 
 Notes:
 - Builds are unsigned. On macOS, right-click the app and choose Open the first time (or sign and notarize with an Apple Developer ID). Windows SmartScreen may warn until the installer is code-signed.
 - Unsigned Windows builds also skip embedding the icon in the `.exe` itself (that step needs Wine off Windows); build on Windows to include it.
 - The first packaging run downloads Electron (about 100 MB), so it needs internet once. The packaged app never does.
-- The same `DEVTOOLS_THEMES=paper npm run build` also works for a themed web build.
+- The same `DEVTOOLS_THEMES=mono npm run build` also works for a themed web build.
 
 ## Proposed structure
 
@@ -179,7 +171,7 @@ Each tool is a self-contained module registered in one tool registry, so adding 
 - [ ] Playwright offline smoke tests for every tool
 
 ### Phase 7 - Themes and desktop app
-- [x] Eight themes (Slate, Paper, Terminal, Editor, Repo, Mono, Workspace, macOS style), each with light and dark
+- [x] Multi-theme support with light and dark per theme (currently Mono only)
 - [x] Theme picker and light/dark/system toggle at the bottom of the sidebar
 - [x] Fonts bundled locally via `@fontsource` (no network); themes and fonts not selected for a build are tree-shaken out
 - [x] Desktop app (Electron) for macOS and Windows with a `--theme` packaging option

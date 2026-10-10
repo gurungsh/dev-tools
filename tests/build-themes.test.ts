@@ -14,12 +14,10 @@ function build(themes: string): { dir: string; fonts: string[]; code: string } {
 
 describe('per-theme builds', () => {
   it('a single-theme build contains only that theme and its fonts', () => {
-    const { fonts, code } = build('paper');
-    expect(code).toContain('Warm and calm'); // Paper description
-    expect(code).not.toContain('Black and white with hairline borders'); // Mono description
-    expect(code).not.toContain('Code-editor greys'); // Editor description
+    const { fonts, code } = build('mono');
+    expect(code).toContain('Black and white with hairline borders'); // Mono description
     expect(fonts.length).toBeGreaterThan(0);
-    expect(fonts.every((f) => /fraunces|ibm-plex/.test(f))).toBe(true);
+    expect(fonts.every((f) => /geist/.test(f))).toBe(true);
   }, 120_000);
 
   it('rejects unknown theme names', () => {

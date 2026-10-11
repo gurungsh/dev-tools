@@ -11,6 +11,9 @@ An offline-first developer toolbox that runs entirely in the browser. It is a Re
 | 3 | **Diff Checker** | Side-by-side and inline diff between two texts or files |
 | 4 | **GUID Generator** | Generate one or many GUIDs/UUIDs, with format options |
 | 5 | **Mermaid Renderer** | Live-render Mermaid diagrams, export as SVG/PNG |
+| 6 | **Base64** | Encode and decode Base64 text |
+| 7 | **Hash Generator** | Compute SHA hashes of text |
+| 8 | **JWT Decoder** | Decode and inspect JSON Web Tokens |
 
 ## Offline principles
 
@@ -177,9 +180,9 @@ Each tool is a self-contained module registered in one tool registry, so adding 
 - [x] Desktop app (Electron) for macOS and Windows with a `--theme` packaging option
 
 ### Ideas / backlog
-- Base64, URL encode/decode, JWT decoder
+- URL encode/decode
 - JSON path / JMESPath query, JSON to TypeScript types
-- Hash generator, timestamp converter, regex tester
+- Timestamp converter, regex tester
 - Cron expression explainer
 
 ## Getting started

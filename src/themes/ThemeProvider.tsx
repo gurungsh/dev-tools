@@ -43,6 +43,8 @@ function cssVars(p: Palette): Record<string, string> {
     '--app-accent': p.accent,
     '--app-on-accent': onColor(p.accent),
     '--app-hover': p.hover,
+    '--app-flame-outer': p.flame.outer,
+    '--app-flame-core': p.flame.core,
   };
 }
 
@@ -61,7 +63,17 @@ function mantineTheme(def: ThemeDef, mode: Mode) {
     colors: { brand: shades(p.accent) as unknown as MantineColorsTuple, dark: darkScale(p) as unknown as MantineColorsTuple },
     fontFamily: def.fonts.sans,
     fontFamilyMonospace: def.fonts.mono,
-    headings: { fontFamily: def.fonts.heading ?? def.fonts.sans, fontWeight: '500' },
+    spacing: { xs: '0.5rem', sm: '0.75rem', md: '1rem', lg: '1.5rem', xl: '2rem' },
+    headings: {
+      fontFamily: def.fonts.heading ?? def.fonts.sans,
+      fontWeight: '500',
+      sizes: {
+        h1: { fontSize: '1.75rem', lineHeight: '1.25' },
+        h2: { fontSize: '1.5rem', lineHeight: '1.3' },
+        h3: { fontSize: '1.125rem', lineHeight: '1.4' },
+        h4: { fontSize: '1rem', lineHeight: '1.4' },
+      },
+    },
     defaultRadius: def.radius,
   });
 }

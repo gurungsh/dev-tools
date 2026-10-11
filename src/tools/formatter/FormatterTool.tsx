@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Button, Checkbox, Grid, Group, NumberInput, Select, Stack, Text, Title } from '@mantine/core';
+import { Alert, Button, Checkbox, Grid, Group, NumberInput, Select, Stack, Text } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { IconAlertCircle, IconArrowsExchange, IconDownload, IconWand } from '@tabler/icons-react';
 import { CodeEditor } from '../../components/CodeEditor';
+import { PanelHeader } from '../../components/Page';
 import { CopyButton } from '../../components/CopyButton';
 import { downloadText, OpenFileButton } from '../../components/FileButton';
 import { cmExtensions } from '../../lib/cmLanguages';
@@ -70,7 +71,6 @@ export default function FormatterTool() {
 
   return (
     <Stack>
-      <Title order={2}>Formatter</Title>
       <Group align="flex-end">
         <Select
           label="Language"
@@ -84,16 +84,16 @@ export default function FormatterTool() {
         <Checkbox mb={8} label="Sort keys" checked={sortKeys} disabled={lang !== 'json' && lang !== 'yaml'} onChange={(e) => setSortKeys(e.currentTarget.checked)} />
         <OpenFileButton onText={(t, name) => { setInput(t); setFilename(name); setLangChoice(AUTO); }} />
       </Group>
-      <Group>
-        <Button size="xs" leftSection={<IconWand size={14} />} onClick={doFormat}>Format</Button>
-        <Button size="xs" variant="default" disabled={!lang || !MINIFIABLE.includes(lang)} onClick={doMinify}>Minify</Button>
-        <Button size="xs" variant="default" disabled={!canConvert} onClick={doConvert}>
+      <Group gap="xs">
+        <Button leftSection={<IconWand size={16} />} onClick={doFormat}>Format</Button>
+        <Button variant="default" disabled={!lang || !MINIFIABLE.includes(lang)} onClick={doMinify}>Minify</Button>
+        <Button variant="default" disabled={!canConvert} onClick={doConvert}>
           {lang === 'yaml' ? 'YAML → JSON' : 'JSON → YAML'}
         </Button>
-        <Button size="xs" variant="default" leftSection={<IconArrowsExchange size={14} />} disabled={!shownOutput} onClick={() => { setInput(output); setFilename(undefined); }}>
+        <Button variant="default" leftSection={<IconArrowsExchange size={16} />} disabled={!shownOutput} onClick={() => { setInput(output); setFilename(undefined); }}>
           Use output as input
         </Button>
-        <Button size="xs" variant="subtle" color="red" onClick={() => { setInput(''); setOutput(''); setError(null); setFilename(undefined); }}>Clear</Button>
+        <Button variant="subtle" color="red" onClick={() => { setInput(''); setOutput(''); setError(null); setFilename(undefined); }}>Clear</Button>
       </Group>
       {shownError && (
         <Alert color="red" icon={<IconAlertCircle size={16} />} title="Invalid input">
@@ -102,20 +102,17 @@ export default function FormatterTool() {
       )}
       <Grid>
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Text size="sm" fw={500} mb={4}>Input</Text>
-          <CodeEditor value={input} onChange={(v) => { setInput(v); setFilename(undefined); }} extensions={cmExtensions(lang)} minHeight="420px" placeholder="Paste or drop code here" />
+          <PanelHeader label="Input" />
+          <CodeEditor value={input} onChange={(v) => { setInput(v); setFilename(undefined); }} extensions={cmExtensions(lang)} placeholder="Paste or drop code here" />
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Group justify="space-between" mb={4}>
-            <Text size="sm" fw={500}>Output</Text>
-            <Group gap="xs">
-              <CopyButton value={shownOutput} disabled={!shownOutput} />
-              <Button size="xs" variant="default" leftSection={<IconDownload size={14} />} disabled={!shownOutput} onClick={() => downloadText(`formatted.${LANGUAGES.find((l) => l.value === lang)?.ext[0] ?? 'txt'}`, output)}>
-                Download
-              </Button>
-            </Group>
-          </Group>
-          <CodeEditor value={shownOutput} readOnly extensions={cmExtensions(outLang)} minHeight="420px" />
+          <PanelHeader label="Output">
+            <CopyButton value={shownOutput} disabled={!shownOutput} />
+            <Button variant="default" leftSection={<IconDownload size={16} />} disabled={!shownOutput} onClick={() => downloadText(`formatted.${LANGUAGES.find((l) => l.value === lang)?.ext[0] ?? 'txt'}`, output)}>
+              Download
+            </Button>
+          </PanelHeader>
+          <CodeEditor value={shownOutput} readOnly extensions={cmExtensions(outLang)} />
         </Grid.Col>
       </Grid>
     </Stack>

@@ -11,7 +11,7 @@ export function OpenFileButton({ onText, label = 'Open file', accept }: { onText
       }}
     >
       {(props) => (
-        <Button {...props} variant="default" size="xs" leftSection={<IconUpload size={14} />}>
+        <Button {...props} variant="default" leftSection={<IconUpload size={16} />}>
           {label}
         </Button>
       )}

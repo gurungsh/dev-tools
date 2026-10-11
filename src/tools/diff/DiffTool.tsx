@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Alert, Badge, Checkbox, Grid, Group, SegmentedControl, Stack, Text, Title, Button } from '@mantine/core';
+import { Alert, Badge, Checkbox, Grid, Group, SegmentedControl, Stack, Button } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { IconArrowsExchange } from '@tabler/icons-react';
+import { PanelHeader } from '../../components/Page';
 import { CodeEditor } from '../../components/CodeEditor';
 import { CopyButton } from '../../components/CopyButton';
 import { OpenFileButton } from '../../components/FileButton';
@@ -48,20 +49,17 @@ export default function DiffTool() {
 
   return (
     <Stack>
-      <Title order={2}>Diff Checker</Title>
       <Grid>
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Group justify="space-between" mb={4}>
-            <Text size="sm" fw={500}>Original{leftName ? ` – ${leftName}` : ''}</Text>
+          <PanelHeader label={`Original${leftName ? ` – ${leftName}` : ''}`}>
             <OpenFileButton onText={(t, n) => { setLeft(t); setLeftName(n); }} />
-          </Group>
+          </PanelHeader>
           <CodeEditor value={left} onChange={(v) => { setLeft(v); setLeftName(undefined); }} minHeight="260px" placeholder="Original text" />
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Group justify="space-between" mb={4}>
-            <Text size="sm" fw={500}>Modified{rightName ? ` – ${rightName}` : ''}</Text>
+          <PanelHeader label={`Modified${rightName ? ` – ${rightName}` : ''}`}>
             <OpenFileButton onText={(t, n) => { setRight(t); setRightName(n); }} />
-          </Group>
+          </PanelHeader>
           <CodeEditor value={right} onChange={(v) => { setRight(v); setRightName(undefined); }} minHeight="260px" placeholder="Modified text" />
         </Grid.Col>
       </Grid>
@@ -70,8 +68,8 @@ export default function DiffTool() {
         <Checkbox label="Ignore whitespace" checked={ignoreWhitespace} onChange={(e) => setIgnoreWhitespace(e.currentTarget.checked)} />
         <Checkbox label="Ignore case" checked={ignoreCase} onChange={(e) => setIgnoreCase(e.currentTarget.checked)} />
         <Checkbox label="Format both first" checked={formatFirst} onChange={(e) => setFormatFirst(e.currentTarget.checked)} />
-        <SegmentedControl size="xs" value={mode} onChange={(v) => setMode(v as 'split' | 'inline')} data={[{ label: 'Side by side', value: 'split' }, { label: 'Inline', value: 'inline' }]} />
-        <Button size="xs" variant="default" leftSection={<IconArrowsExchange size={14} />} onClick={() => { setLeft(right); setRight(left); setLeftName(rightName); setRightName(leftName); }}>
+        <SegmentedControl value={mode} onChange={(v) => setMode(v as 'split' | 'inline')} data={[{ label: 'Side by side', value: 'split' }, { label: 'Inline', value: 'inline' }]} />
+        <Button variant="default" leftSection={<IconArrowsExchange size={16} />} onClick={() => { setLeft(right); setRight(left); setLeftName(rightName); setRightName(leftName); }}>
           Swap
         </Button>
         <CopyButton value={unifiedPatch(prepared.a, prepared.b)} label="Copy unified diff" disabled={!hasInput || result.identical} />

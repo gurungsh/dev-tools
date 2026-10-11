@@ -27,7 +27,6 @@ export default function GuidTool() {
 
   return (
     <Stack>
-      <Title order={2}>GUID / UUID Generator</Title>
       <Group align="flex-end">
         <SegmentedControl
           value={version}
@@ -47,14 +46,14 @@ export default function GuidTool() {
         <Checkbox label="Braces {}" checked={options.braces} onChange={(e) => set({ braces: e.currentTarget.checked })} />
         <Checkbox label="Quotes" checked={options.quotes} onChange={(e) => set({ quotes: e.currentTarget.checked })} />
       </Group>
-      <Group>
+      <Group gap="xs">
         <Button leftSection={<IconRefresh size={16} />} onClick={() => setSeed((s) => s + 1)}>Regenerate</Button>
         <CopyButton value={text} label="Copy all" />
         <CopyButton value={guids[0] ?? ''} label="Copy first" />
       </Group>
       <CodeEditor value={text} readOnly minHeight="200px" />
 
-      <Title order={4} mt="md">Validate a GUID</Title>
+      <Title order={3} mt="md">Validate a GUID</Title>
       <TextInput placeholder="Paste a GUID to inspect" value={check} onChange={(e) => setCheck(e.currentTarget.value)} />
       {info === null && <Alert color="red">Not a valid GUID.</Alert>}
       {info && (

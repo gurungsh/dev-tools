@@ -21,7 +21,7 @@ These rules keep the app usable with no internet:
 
 - **No CDN assets.** Every script, stylesheet, font and icon comes from `node_modules` and is bundled by Vite. No Google Fonts, no `<script src="https://...">`.
 - **No runtime network calls.** No analytics, telemetry or remote APIs. Files are read with the File API and never uploaded.
-- **Everything runs client-side.** Formatting, diffing, schema sampling and Mermaid rendering all happen in the browser.
+- **Everything runs client-side.** Formatting, diffing, schema sampling, Base64, hashing, JWT decoding and Mermaid rendering all happen in the browser.
 - **Lazy-load the heavy parts.** Mermaid is several MB, so it is loaded with a dynamic `import()` the first time the tool is opened. This is still local and still works offline.
 - **Optional single-file build.** `vite-plugin-singlefile` inlines all JS/CSS into one `index.html` that can be opened by double-click or shared by copy.
 - **Persist state locally.** Last inputs and settings are stored in `localStorage`.
@@ -41,12 +41,14 @@ These rules keep the app usable with no internet:
 | Diff | `diff` (jsdiff) and `@codemirror/merge` | Line and word level, side-by-side view |
 | Sample data | Own seeded generator (`src/lib/sampleGen.ts`) | Schema/OpenAPI to dummy values, repeatable via seed |
 | GUID | `crypto.randomUUID()` with a `crypto.getRandomValues` fallback | No extra dependency |
+| Hash | Web Crypto `crypto.subtle.digest` | SHA family only (no MD5); no extra dependency |
+| Base64 / JWT | Own code in `src/lib` | JWTs are decoded only, never verified |
 | UI | Mantine 8 | Theming via `createTheme`; fonts bundled with `@fontsource` (no CDN) |
 | Tests | Vitest | Unit tests for all `src/lib` logic |
 
 ## Themes
 
-Pick a theme and light/dark/system mode from the bottom of the sidebar; choices are remembered. The theme picker only appears when a build has more than one theme.
+Pick light/dark/system mode from the bottom of the sidebar; the choice is remembered. Only the Mono theme ships right now, so the theme picker is hidden; it appears again when a build has more than one theme.
 
 | Theme | Look |
 |-------|------|
@@ -89,21 +91,24 @@ Notes:
 - The first packaging run downloads Electron (about 100 MB), so it needs internet once. The packaged app never does.
 - The same `DEVTOOLS_THEMES=mono npm run build` also works for a themed web build.
 
-## Proposed structure
+## Project structure
 
 ```
 dev-tools/
 ├─ src/
-│  ├─ app/              # shell, layout, routing, theme
+│  ├─ app/              # shell, home, routing, tool registry
 │  ├─ tools/
 │  │  ├─ formatter/
-│  │  ├─ request-generator/
+│  │  ├─ request/
 │  │  ├─ diff/
 │  │  ├─ guid/
-│  │  └─ mermaid/
+│  │  ├─ mermaid/
+│  │  ├─ base64/
+│  │  ├─ hash/
+│  │  └─ jwt/
 │  ├─ themes/           # theme defs, provider, switcher, logo
-│  ├─ components/       # CodeEditor, CopyButton, OpenFileButton
-│  ├─ lib/              # pure functions (format, sample, diff)
+│  ├─ components/       # CodeEditor, CopyButton, FileButton, Page
+│  ├─ lib/              # pure functions (format, sample, diff, base64, hash, jwt)
 │  └─ main.tsx
 ├─ tests/               # Vitest unit tests for src/lib
 ├─ electron/            # desktop main process
@@ -174,10 +179,16 @@ Each tool is a self-contained module registered in one tool registry, so adding 
 - [ ] Playwright offline smoke tests for every tool
 
 ### Phase 7 - Themes and desktop app
-- [x] Multi-theme support with light and dark per theme (currently Mono only)
+- [x] Multi-theme support with light and dark per theme (only Mono ships now; the other themes were removed)
 - [x] Theme picker and light/dark/system toggle at the bottom of the sidebar
 - [x] Fonts bundled locally via `@fontsource` (no network); themes and fonts not selected for a build are tree-shaken out
 - [x] Desktop app (Electron) for macOS and Windows with a `--theme` packaging option
+
+### Phase 8 - More tools
+- [x] Base64 encode/decode
+- [x] Hash generator (SHA family)
+- [x] JWT decoder
+- [x] Shared `Page` layout component for tools
 
 ### Ideas / backlog
 - URL encode/decode

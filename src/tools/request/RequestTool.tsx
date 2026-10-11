@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Alert, Button, Checkbox, Group, NumberInput, Select, Stack, Table, Tabs, Text, Title, Badge } from '@mantine/core';
+import { Alert, Button, Checkbox, Group, NumberInput, Select, Stack, Table, Tabs, Text, Badge } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { IconAlertCircle, IconDice5, IconWand } from '@tabler/icons-react';
+import { PanelHeader } from '../../components/Page';
 import { CodeEditor } from '../../components/CodeEditor';
 import { CopyButton } from '../../components/CopyButton';
 import { OpenFileButton } from '../../components/FileButton';
@@ -19,7 +20,7 @@ function OptionsBar({ opts, setOpts, count, setCount, showExamples }: { opts: Ge
   return (
     <Group align="flex-end">
       <NumberInput label="Seed" w={110} value={opts.seed} onChange={(v) => set({ seed: Number(v) || 0 })} />
-      <Button variant="default" size="sm" leftSection={<IconDice5 size={16} />} onClick={() => set({ seed: Math.floor(Math.random() * 1e6) })}>New seed</Button>
+      <Button variant="default" leftSection={<IconDice5 size={16} />} onClick={() => set({ seed: Math.floor(Math.random() * 1e6) })}>New seed</Button>
       <NumberInput label="Array length" w={110} min={0} max={50} value={opts.arrayLength} onChange={(v) => set({ arrayLength: Number(v) || 0 })} />
       <NumberInput label="Variations" w={110} min={1} max={100} value={count} onChange={(v) => setCount(Math.max(1, Number(v) || 1))} />
       <Checkbox mb={8} label="Include optional fields" checked={opts.includeOptional} onChange={(e) => set({ includeOptional: e.currentTarget.checked })} />
@@ -50,22 +51,18 @@ function SampleMode({ opts, setOpts, count, setCount }: ModeProps) {
       <OptionsBar opts={opts} setOpts={setOpts} count={count} setCount={setCount} showExamples={false} />
       {parsed.error && input.trim() && <Alert color="red" icon={<IconAlertCircle size={16} />}>Invalid JSON: {parsed.error}</Alert>}
       <Group grow align="flex-start">
-        <Stack gap={4}>
-          <Group justify="space-between">
-            <Text size="sm" fw={500}>Sample JSON</Text>
-            <Group gap="xs">
-              <OpenFileButton accept=".json" onText={setInput} />
-              <Button size="xs" variant="default" onClick={() => setInput(EXAMPLE_JSON)}>Example</Button>
-            </Group>
-          </Group>
-          <CodeEditor value={input} onChange={setInput} extensions={jsonExt} minHeight="420px" />
+        <Stack gap={0}>
+          <PanelHeader label="Sample JSON">
+            <OpenFileButton accept=".json" onText={setInput} />
+            <Button variant="default" onClick={() => setInput(EXAMPLE_JSON)}>Example</Button>
+          </PanelHeader>
+          <CodeEditor value={input} onChange={setInput} extensions={jsonExt} />
         </Stack>
-        <Stack gap={4}>
-          <Group justify="space-between">
-            <Text size="sm" fw={500}>Generated {count > 1 ? `(${count} variations)` : 'request body'}</Text>
+        <Stack gap={0}>
+          <PanelHeader label={`Generated ${count > 1 ? `(${count} variations)` : 'request body'}`}>
             <CopyButton value={output} disabled={!output} />
-          </Group>
-          <CodeEditor value={output} readOnly extensions={jsonExt} minHeight="420px" />
+          </PanelHeader>
+          <CodeEditor value={output} readOnly extensions={jsonExt} />
         </Stack>
       </Group>
     </Stack>
@@ -109,15 +106,12 @@ function OpenApiMode({ opts, setOpts, count, setCount }: ModeProps) {
       <OptionsBar opts={opts} setOpts={setOpts} count={count} setCount={setCount} showExamples />
       {parsed.error && <Alert color="red" icon={<IconAlertCircle size={16} />}>{parsed.error}</Alert>}
       <Group grow align="flex-start">
-        <Stack gap={4}>
-          <Group justify="space-between">
-            <Text size="sm" fw={500}>{parsed.spec?.title ?? 'OpenAPI / Swagger document'}</Text>
-            <Group gap="xs">
-              <OpenFileButton accept=".json,.yaml,.yml" onText={(t) => { setText(t); setSelected(null); }} />
-              <Button size="xs" variant="default" onClick={() => { setText(EXAMPLE_SPEC); setSelected(null); }}>Example</Button>
-            </Group>
-          </Group>
-          <CodeEditor value={text} onChange={(v) => { setText(v); setSelected(null); }} extensions={text.trimStart().startsWith('{') ? jsonExt : yamlExt} minHeight="520px" />
+        <Stack gap={0}>
+          <PanelHeader label={parsed.spec?.title ?? 'OpenAPI / Swagger document'}>
+            <OpenFileButton accept=".json,.yaml,.yml" onText={(t) => { setText(t); setSelected(null); }} />
+            <Button variant="default" onClick={() => { setText(EXAMPLE_SPEC); setSelected(null); }}>Example</Button>
+          </PanelHeader>
+          <CodeEditor value={text} onChange={(v) => { setText(v); setSelected(null); }} extensions={text.trimStart().startsWith('{') ? jsonExt : yamlExt} />
         </Stack>
         <Stack gap="xs">
           <Select
@@ -194,7 +188,6 @@ export default function RequestTool() {
 
   return (
     <Stack>
-      <Title order={2}>Request Generator</Title>
       <Tabs value={mode} onChange={(v) => setMode(v ?? 'sample')}>
         <Tabs.List>
           <Tabs.Tab value="sample">From sample JSON</Tabs.Tab>

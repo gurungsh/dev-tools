@@ -20,7 +20,7 @@ function content(cell: Cell | undefined, strong: string): ReactNode {
 
 export function DiffView({ result, mode }: { result: DiffResult; mode: 'split' | 'inline' }) {
   return (
-    <ScrollArea type="auto" style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 4 }}>
+    <ScrollArea type="auto" style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-default)' }}>
       <Box component="table" w="100%" style={{ borderCollapse: 'collapse', tableLayout: 'fixed' }}>
         <tbody>{mode === 'split' ? <Split result={result} /> : <Inline result={result} />}</tbody>
       </Box>

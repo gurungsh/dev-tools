@@ -1,7 +1,8 @@
 import { Suspense } from 'react';
 import { NavLink as RouterLink, Route, Routes } from 'react-router-dom';
-import { AppShell, Burger, Center, Divider, Group, Loader, NavLink, Title } from '@mantine/core';
+import { AppShell, Burger, Center, Divider, Group, Loader, NavLink, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { Page } from '../components/Page';
 import { Logo } from '../themes/Logo';
 import { ThemeSwitcher } from '../themes/ThemeSwitcher';
 import { tools } from './registry';
@@ -14,14 +15,14 @@ export function App() {
     <AppShell
       header={{ height: 52 }}
       navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      padding="md"
+      padding={{ base: 16, sm: 24, lg: 32 }}
     >
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Group gap="xs">
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" aria-label="Toggle navigation" />
             <Logo size={26} />
-            <Title order={4}>Dev Tools</Title>
+            <Text fw={500}>Dev Tools</Text>
           </Group>
         </Group>
       </AppShell.Header>
@@ -50,7 +51,7 @@ export function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             {tools.map((t) => (
-              <Route key={t.id} path={t.path} element={<t.component />} />
+              <Route key={t.id} path={t.path} element={<Page title={t.label} description={t.description}><t.component /></Page>} />
             ))}
             <Route path="*" element={<Home />} />
           </Routes>

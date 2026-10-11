@@ -14,6 +14,8 @@ export interface Palette {
   accent: string;
   /** Hover / selected background. */
   hover: string;
+  /** Logo flame: body color and the brighter core. */
+  flame: { outer: string; core: string };
   /** Syntax colors for the code editors. */
   syntax: { key: string; string: string; number: string; keyword: string; comment: string };
 }

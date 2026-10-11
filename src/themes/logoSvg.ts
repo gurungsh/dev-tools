@@ -9,6 +9,8 @@ export function resolveLogo(def: ThemeDef, mode: Mode): string {
     'var(--app-on-accent)': onColor(p.accent),
     'var(--app-bg)': p.bg,
     'var(--app-text)': p.text,
+    'var(--app-flame-outer)': p.flame.outer,
+    'var(--app-flame-core)': p.flame.core,
   };
   return def.logo.replace(/var\(--app-[a-z-]+\)/g, (m) => map[m] ?? m);
 }

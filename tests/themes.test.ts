@@ -27,7 +27,7 @@ describe.each(THEMES.map((t) => [t.id, t] as const))('%s theme', (_id, def) => {
     const p = def[mode];
 
     it('uses valid hex colors', () => {
-      for (const c of [p.bg, p.panel, p.border, p.text, p.dimmed, p.accent, p.hover, ...Object.values(p.syntax)]) expect(c).toMatch(HEX);
+      for (const c of [p.bg, p.panel, p.border, p.text, p.dimmed, p.accent, p.hover, p.flame.outer, p.flame.core, ...Object.values(p.syntax)]) expect(c).toMatch(HEX);
     });
     it('is actually ' + mode, () => {
       const lightBg = contrast(p.bg, '#ffffff') < contrast(p.bg, '#000000');

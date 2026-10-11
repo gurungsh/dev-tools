@@ -7,9 +7,8 @@ export function CopyButton({ value, label = 'Copy', disabled }: { value: string;
       {({ copied, copy }) => (
         <Button
           variant="default"
-          size="xs"
           disabled={disabled}
-          leftSection={copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
+          leftSection={copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
           onClick={copy}
         >
           {copied ? 'Copied' : label}

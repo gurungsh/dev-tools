@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Button, Grid, Group, Loader, Select, Stack, Text, Title, ActionIcon, Box } from '@mantine/core';
+import { Alert, Button, Grid, Group, Loader, Select, Stack, Text, ActionIcon, Box } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { useAppTheme } from '../../themes/ThemeProvider';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle, IconDownload, IconWand, IconZoomIn, IconZoomOut, IconZoomReset } from '@tabler/icons-react';
-import { CodeEditor } from '../../components/CodeEditor';
+import { PanelHeader } from '../../components/Page';
+import { CodeEditor, PANEL_HEIGHT } from '../../components/CodeEditor';
 import { CopyButton } from '../../components/CopyButton';
 import { downloadText, OpenFileButton } from '../../components/FileButton';
 import { formatMermaid } from '../../lib/mermaidFormat';
@@ -58,10 +59,8 @@ export default function MermaidTool() {
 
   return (
     <Stack>
-      <Title order={2}>Mermaid Renderer</Title>
-      <Group>
+      <Group gap="xs">
         <Select
-          size="xs"
           w={190}
           placeholder="Load a sample…"
           value={null}
@@ -69,34 +68,30 @@ export default function MermaidTool() {
           onChange={(v) => v && setCode(MERMAID_SAMPLES.find((s) => s.label === v)!.code)}
         />
         <OpenFileButton accept=".mmd,.mermaid,.md,.txt" onText={(t) => setCode(t)} />
-        <Button size="xs" variant="default" leftSection={<IconWand size={14} />} onClick={() => setCode(formatMermaid(code))}>Format</Button>
+        <Button variant="default" leftSection={<IconWand size={16} />} onClick={() => setCode(formatMermaid(code))}>Format</Button>
         <CopyButton value={code} label="Copy code" />
       </Group>
+      {error && (
+        <Alert color="red" icon={<IconAlertCircle size={16} />} title="Syntax error">
+          <Text size="sm" style={{ whiteSpace: 'pre-wrap', fontFamily: 'var(--mantine-font-family-monospace)' }}>{error}</Text>
+        </Alert>
+      )}
       <Grid>
         <Grid.Col span={{ base: 12, md: 5 }}>
-          <CodeEditor value={code} onChange={setCode} minHeight="480px" placeholder="Write Mermaid code…" />
+          <PanelHeader label="Code" />
+          <CodeEditor value={code} onChange={setCode} placeholder="Write Mermaid code…" />
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 7 }}>
-          <Group justify="space-between" mb={4}>
-            <Group gap="xs">
-              <Text size="sm" fw={500}>Preview</Text>
-              {busy && <Loader size="xs" />}
-            </Group>
-            <Group gap={4}>
-              <ActionIcon variant="default" aria-label="Zoom out" onClick={() => setZoom((z) => Math.max(0.2, z - 0.2))}><IconZoomOut size={16} /></ActionIcon>
-              <ActionIcon variant="default" aria-label="Reset zoom" onClick={() => setZoom(1)}><IconZoomReset size={16} /></ActionIcon>
-              <ActionIcon variant="default" aria-label="Zoom in" onClick={() => setZoom((z) => Math.min(4, z + 0.2))}><IconZoomIn size={16} /></ActionIcon>
-              <Button size="xs" variant="default" leftSection={<IconDownload size={14} />} disabled={!svg} onClick={() => downloadText('diagram.svg', svg, 'image/svg+xml')}>SVG</Button>
-              <Button size="xs" variant="default" leftSection={<IconDownload size={14} />} disabled={!svg} onClick={exportPng}>PNG</Button>
-            </Group>
-          </Group>
-          {error && (
-            <Alert color="red" icon={<IconAlertCircle size={16} />} title="Syntax error" mb="xs">
-              <Text size="sm" style={{ whiteSpace: 'pre-wrap', fontFamily: 'var(--mantine-font-family-monospace)' }}>{error}</Text>
-            </Alert>
-          )}
+          <PanelHeader label="Preview">
+            {busy && <Loader size="xs" />}
+            <ActionIcon size={36} variant="default" aria-label="Zoom out" onClick={() => setZoom((z) => Math.max(0.2, z - 0.2))}><IconZoomOut size={16} /></ActionIcon>
+            <ActionIcon size={36} variant="default" aria-label="Reset zoom" onClick={() => setZoom(1)}><IconZoomReset size={16} /></ActionIcon>
+            <ActionIcon size={36} variant="default" aria-label="Zoom in" onClick={() => setZoom((z) => Math.min(4, z + 0.2))}><IconZoomIn size={16} /></ActionIcon>
+            <Button variant="default" leftSection={<IconDownload size={16} />} disabled={!svg} onClick={() => downloadText('diagram.svg', svg, 'image/svg+xml')}>SVG</Button>
+            <Button variant="default" leftSection={<IconDownload size={16} />} disabled={!svg} onClick={exportPng}>PNG</Button>
+          </PanelHeader>
           <Box
-            style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 4, overflow: 'auto', height: 480, padding: 12, opacity: error ? 0.5 : 1 }}
+            style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-default)', overflow: 'auto', height: PANEL_HEIGHT, padding: 'var(--mantine-spacing-sm)', opacity: error ? 0.5 : 1 }}
           >
             <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top left', width: 'fit-content' }} dangerouslySetInnerHTML={{ __html: svg }} />
           </Box>

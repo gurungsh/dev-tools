@@ -4,6 +4,8 @@ import { useMemo } from 'react';
 import { useAppTheme } from '../themes/ThemeProvider';
 import { codeMirrorTheme } from './codeMirrorTheme';
 
+export const PANEL_HEIGHT = 480;
+
 export interface CodeEditorProps {
   value: string;
   onChange?: (value: string) => void;
@@ -14,7 +16,7 @@ export interface CodeEditorProps {
   placeholder?: string;
 }
 
-export function CodeEditor({ value, onChange, extensions, readOnly, height, minHeight = '300px', placeholder }: CodeEditorProps) {
+export function CodeEditor({ value, onChange, extensions, readOnly, height, minHeight = `${PANEL_HEIGHT}px`, placeholder }: CodeEditorProps) {
   const { def, mode } = useAppTheme();
   const cmTheme = useMemo(() => codeMirrorTheme(def, mode), [def, mode]);
   return (
@@ -29,7 +31,7 @@ export function CodeEditor({ value, onChange, extensions, readOnly, height, minH
       placeholder={placeholder}
       theme={cmTheme}
       basicSetup={{ foldGutter: true, highlightActiveLine: !readOnly }}
-      style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 4, overflow: 'hidden' }}
+      style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-default)', overflow: 'hidden' }}
     />
   );
 }

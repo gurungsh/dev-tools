@@ -1,4 +1,4 @@
-export type ThemeId = 'slate' | 'paper' | 'terminal' | 'editor' | 'repo' | 'mono' | 'workspace' | 'macos';
+export type ThemeId = 'mono';
 export type Mode = 'light' | 'dark';
 export type ModePreference = Mode | 'system';
 

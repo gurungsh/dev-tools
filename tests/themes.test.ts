@@ -5,12 +5,12 @@ import { contrast, darkScale, mix, onColor, shades } from '../src/themes/colors'
 const HEX = /^#[0-9a-f]{6}$/i;
 
 describe('theme registry', () => {
-  it('contains the eight requested themes in order', () => {
-    expect(THEMES.map((t) => t.id)).toEqual(['slate', 'paper', 'terminal', 'editor', 'repo', 'mono', 'workspace', 'macos']);
+  it('contains the configured themes in order', () => {
+    expect(THEMES.map((t) => t.id)).toEqual(['mono']);
   });
   it('falls back to the default theme for unknown ids', () => {
     expect(getTheme('nope').id).toBe(DEFAULT_THEME_ID);
-    expect(getTheme(null).id).toBe('slate');
+    expect(getTheme(null).id).toBe('mono');
   });
 });
 

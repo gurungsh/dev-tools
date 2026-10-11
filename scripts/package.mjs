@@ -1,7 +1,7 @@
 // Packages the app as a desktop installer for macOS and/or Windows.
 //
-//   npm run package -- --theme=paper --platform=mac
-//   npm run package -- --theme=paper,mono --platform=win
+//   npm run package -- --theme=mono --platform=mac
+//   npm run package -- --theme=mono --platform=win
 //   npm run package                      (all themes, current OS)
 //
 // A single theme ships only that theme (light and dark); several themes get a picker.

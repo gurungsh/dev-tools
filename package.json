@@ -13,7 +13,8 @@
     "check:offline": "node scripts/check-offline.mjs dist",
     "build:app": "vite build --outDir dist-app --emptyOutDir",
     "desktop": "npm run build:app && electron .",
-    "package": "node scripts/package.mjs"
+    "package": "node scripts/package.mjs",
+    "packs": "node scripts/build-packs.mjs"
   },
   "devDependencies": {
     "@codemirror/lang-css": "^6.3.1",

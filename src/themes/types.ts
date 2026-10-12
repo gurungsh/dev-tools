@@ -1,4 +1,5 @@
-export type ThemeId = 'mono' | 'terminal' | 'comic' | 'synthwave' | 'brutalism' | 'anthropomorphic' | 'medieval' | 'memphis';
+/** Built-in themes are listed in config/themes.json; installed theme packs add more ids at runtime. */
+export type ThemeId = string;
 export type ArtSlot = 'main' | 'nav' | 'header' | 'card';
 export type Mode = 'light' | 'dark';
 export type ModePreference = Mode | 'system';

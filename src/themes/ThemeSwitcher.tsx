@@ -1,11 +1,11 @@
-import { ColorSwatch, Select, SegmentedControl, Stack, Center, VisuallyHidden, Text } from '@mantine/core';
-import { IconDeviceDesktop, IconMoon, IconSun } from '@tabler/icons-react';
+import { Button, ColorSwatch, Select, SegmentedControl, Stack, Center, VisuallyHidden, Text } from '@mantine/core';
+import { IconDeviceDesktop, IconMoon, IconPlus, IconSun } from '@tabler/icons-react';
 import { useAppTheme } from './ThemeProvider';
 import type { ModePreference } from './types';
 
 /** Theme picker (hidden when the build has a single theme) and light/dark/system toggle, as two matching labeled controls. */
 export function ThemeSwitcher() {
-  const { themes, themeId, setThemeId, preference, setPreference, palette } = useAppTheme();
+  const { themes, themeId, setThemeId, preference, setPreference, palette, canInstallPacks, installPacks } = useAppTheme();
   const modeItem = (value: ModePreference, label: string, icon: React.ReactNode) => ({
     value,
     label: (
@@ -31,6 +31,11 @@ export function ThemeSwitcher() {
             leftSection={<ColorSwatch size={12} color={palette.accent} withShadow={false} />}
             comboboxProps={{ position: 'top', withinPortal: true }}
           />
+          {canInstallPacks && (
+            <Button variant="subtle" size="xs" mt={4} px={4} leftSection={<IconPlus size={14} />} onClick={() => void installPacks()}>
+              Install theme pack…
+            </Button>
+          )}
         </div>
       )}
       <div>

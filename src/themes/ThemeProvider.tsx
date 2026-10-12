@@ -1,9 +1,10 @@
-import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Badge, createTheme, MantineProvider, type CSSVariablesResolver, type MantineColorsTuple } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { darkScale, onColor, shades } from './colors';
 import { resolveLogo } from './logoSvg';
 import { DEFAULT_THEME_ID, getTheme, THEMES } from './index';
+import { loadPackTheme } from './packs';
 import type { Mode, ModePreference, Palette, ThemeDef, ThemeId } from './types';
 
 interface AppThemeContext {
@@ -17,6 +18,9 @@ interface AppThemeContext {
   mode: Mode;
   /** Tool name under the active theme (falls back to the registry label). */
   toolLabel: (tool: { id: string; label: string }) => string;
+  /** True in the desktop app, where extra themes can be installed. */
+  canInstallPacks: boolean;
+  installPacks: () => Promise<void>;
   /** Sidebar name under the active theme: the theme's own name, else the tool's short label. */
   navLabel: (tool: { id: string; label: string; shortLabel?: string }) => string;
   /** CSS url() of the page backdrop for a page variant, or undefined when the theme has none. */
@@ -101,7 +105,24 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
   const [preference, setPreference] = useLocalStorage<ModePreference>({ key: 'devtools:mode', defaultValue: 'system' });
   const system = useColorScheme();
 
-  const def = getTheme(storedTheme);
+  // Themes installed as packs (desktop app only). Built-in themes always win over a pack with the same id.
+  const [packThemes, setPackThemes] = useState<ThemeDef[]>([]);
+  useEffect(() => {
+    const api = window.devtools?.themePacks;
+    if (!api) return;
+    let alive = true;
+    const load = async () => {
+      const infos = (await api.list()).filter((i) => !THEMES.some((t) => t.id === i.id));
+      const defs = (await Promise.all(infos.map(loadPackTheme))).filter((d): d is ThemeDef => d !== null);
+      if (alive) setPackThemes(defs);
+    };
+    void load();
+    const off = api.onChanged(() => void load());
+    return () => { alive = false; off(); };
+  }, []);
+  const themes = useMemo(() => [...THEMES, ...packThemes], [packThemes]);
+
+  const def = themes.find((t) => t.id === storedTheme) ?? getTheme(storedTheme);
   const mode: Mode = preference === 'system' ? system : preference;
 
   useEffect(() => {
@@ -120,8 +141,8 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
   const theme = useMemo(() => mantineTheme(def, mode), [def, mode]);
   const cssResolver = useMemo(() => resolver(def), [def]);
   const value = useMemo<AppThemeContext>(
-    () => ({ def, palette: def[mode], themes: THEMES, themeId: def.id, setThemeId: (id) => setThemeId(id), preference, setPreference, mode, toolLabel: (t) => def.toolNames?.[t.id] ?? t.label, navLabel: (t) => def.toolNames?.[t.id] ?? t.shortLabel ?? t.label, mainArt: (v) => (def.art?.main ? svgUrl(def.art.main(def[mode], v)) : undefined) }),
-    [def, mode, preference, setPreference, setThemeId],
+    () => ({ def, palette: def[mode], themes, themeId: def.id, setThemeId: (id) => setThemeId(id), preference, setPreference, mode, canInstallPacks: !!window.devtools?.themePacks, installPacks: () => window.devtools?.themePacks.install() ?? Promise.resolve(), toolLabel: (t) => def.toolNames?.[t.id] ?? t.label, navLabel: (t) => def.toolNames?.[t.id] ?? t.shortLabel ?? t.label, mainArt: (v) => (def.art?.main ? svgUrl(def.art.main(def[mode], v)) : undefined) }),
+    [def, mode, themes, preference, setPreference, setThemeId],
   );
 
   return (

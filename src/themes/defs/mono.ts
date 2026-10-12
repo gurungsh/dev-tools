@@ -6,7 +6,7 @@ export const mono: ThemeDef = {
   label: 'Mono',
   description: 'Black and white with hairline borders.',
   fonts: { sans: "'Geist', 'Inter', system-ui, sans-serif", mono: "'Geist Mono', ui-monospace, monospace" },
-  loadFonts: () => Promise.all([import('@fontsource/geist/latin-400.css'), import('@fontsource/geist/latin-500.css'), import('@fontsource/geist-mono/latin-400.css')]),
+  loadFonts: () => Promise.all([import('@fontsource/geist/latin-400.css'), import('@fontsource/geist/latin-500.css'), import('@fontsource/geist/latin-600.css'), import('@fontsource/geist/latin-700.css'), import('@fontsource/geist-mono/latin-400.css')]),
   radius: 6,
   logo: flameLogo,
   light: {

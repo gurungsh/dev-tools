@@ -5,6 +5,8 @@ export interface ToolDefinition {
   id: string;
   path: string;
   label: string;
+  /** Compact name for the sidebar. The page title and home card keep the full `label`. */
+  shortLabel?: string;
   description: string;
   icon: Icon;
   component: LazyExoticComponent<ComponentType>;
@@ -19,6 +21,7 @@ export const tools: ToolDefinition[] = [
     id: 'guid',
     path: '/guid',
     label: 'GUID Generator',
+    shortLabel: 'GUID',
     description: 'Generate v4, v7 or nil UUIDs in bulk with format options.',
     icon: IconFingerprint,
     component: lazy(() => import('../tools/guid/GuidTool')),
@@ -27,6 +30,7 @@ export const tools: ToolDefinition[] = [
     id: 'request',
     path: '/request',
     label: 'Request Generator',
+    shortLabel: 'Request',
     description: 'Generate dummy request bodies from sample JSON or a Swagger/OpenAPI endpoint, with cURL and fetch snippets.',
     icon: IconSend,
     component: lazy(() => import('../tools/request/RequestTool')),
@@ -43,6 +47,7 @@ export const tools: ToolDefinition[] = [
     id: 'diff',
     path: '/diff',
     label: 'Diff Checker',
+    shortLabel: 'Diff',
     description: 'Compare two texts or files side by side or inline, with word-level highlights.',
     icon: IconGitCompare,
     component: lazy(() => import('../tools/diff/DiffTool')),
@@ -51,6 +56,7 @@ export const tools: ToolDefinition[] = [
     id: 'mermaid',
     path: '/mermaid',
     label: 'Mermaid Renderer',
+    shortLabel: 'Mermaid',
     description: 'Live-render Mermaid diagrams offline and export as SVG or PNG.',
     icon: IconChartDots3,
     component: lazy(() => import('../tools/mermaid/MermaidTool')),
@@ -67,6 +73,7 @@ export const tools: ToolDefinition[] = [
     id: 'jwt',
     path: '/jwt',
     label: 'JWT Decoder',
+    shortLabel: 'JWT',
     description: 'Decode a JWT header and payload and check its expiry. The signature is not verified.',
     icon: IconKey,
     component: lazy(() => import('../tools/jwt/JwtTool')),
@@ -75,6 +82,7 @@ export const tools: ToolDefinition[] = [
     id: 'hash',
     path: '/hash',
     label: 'Hash Generator',
+    shortLabel: 'Hash',
     description: 'Compute SHA-1, SHA-256, SHA-384 and SHA-512 digests of text.',
     icon: IconHash,
     component: lazy(() => import('../tools/hash/HashTool')),

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
-import { createTheme, MantineProvider, type CSSVariablesResolver, type MantineColorsTuple } from '@mantine/core';
+import { Badge, createTheme, MantineProvider, type CSSVariablesResolver, type MantineColorsTuple } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { darkScale, onColor, shades } from './colors';
 import { resolveLogo } from './logoSvg';
@@ -15,6 +15,12 @@ interface AppThemeContext {
   preference: ModePreference;
   setPreference: (p: ModePreference) => void;
   mode: Mode;
+  /** Tool name under the active theme (falls back to the registry label). */
+  toolLabel: (tool: { id: string; label: string }) => string;
+  /** Sidebar name under the active theme: the theme's own name, else the tool's short label. */
+  navLabel: (tool: { id: string; label: string; shortLabel?: string }) => string;
+  /** CSS url() of the page backdrop for a page variant, or undefined when the theme has none. */
+  mainArt: (variant: number) => string | undefined;
 }
 
 const Ctx = createContext<AppThemeContext | null>(null);
@@ -25,8 +31,14 @@ export function useAppTheme(): AppThemeContext {
   return v;
 }
 
-function cssVars(p: Palette): Record<string, string> {
+const svgUrl = (svg: string) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+
+function cssVars(def: ThemeDef, p: Palette): Record<string, string> {
+  const art = Object.fromEntries(
+    Object.entries(def.art ?? {}).filter(([slot]) => slot !== 'main').map(([slot, fn]) => [`--app-art-${slot}`, svgUrl((fn as (p: Palette) => string)(p))]),
+  );
   return {
+    ...art,
     '--mantine-color-body': p.bg,
     '--mantine-color-text': p.text,
     '--mantine-color-dimmed': p.dimmed,
@@ -50,12 +62,14 @@ function cssVars(p: Palette): Record<string, string> {
 
 const resolver = (def: ThemeDef): CSSVariablesResolver => () => ({
   variables: {},
-  light: cssVars(def.light),
-  dark: cssVars(def.dark),
+  light: cssVars(def, def.light),
+  dark: cssVars(def, def.dark),
 });
 
 function mantineTheme(def: ThemeDef, mode: Mode) {
   const p = def[mode];
+  const k = def.fontScale ?? 1;
+  const rem = (n: number) => `${+(n * k).toFixed(3)}rem`;
   return createTheme({
     primaryColor: 'brand',
     primaryShade: 6,
@@ -63,18 +77,22 @@ function mantineTheme(def: ThemeDef, mode: Mode) {
     colors: { brand: shades(p.accent) as unknown as MantineColorsTuple, dark: darkScale(p) as unknown as MantineColorsTuple },
     fontFamily: def.fonts.sans,
     fontFamilyMonospace: def.fonts.mono,
+    // Three sizes in all (before a theme's fontScale): 12 for all body and UI text, 16 headings, 22 page title. Code is a fixed 12px.
+    fontSizes: { xs: rem(0.75), sm: rem(0.75), md: rem(0.75), lg: rem(1), xl: rem(1.375) },
     spacing: { xs: '0.5rem', sm: '0.75rem', md: '1rem', lg: '1.5rem', xl: '2rem' },
     headings: {
       fontFamily: def.fonts.heading ?? def.fonts.sans,
       fontWeight: '500',
       sizes: {
-        h1: { fontSize: '1.75rem', lineHeight: '1.25' },
-        h2: { fontSize: '1.5rem', lineHeight: '1.3' },
-        h3: { fontSize: '1.125rem', lineHeight: '1.4' },
-        h4: { fontSize: '1rem', lineHeight: '1.4' },
+        h1: { fontSize: rem(1.375), lineHeight: '1.25' },
+        h2: { fontSize: rem(1), lineHeight: '1.4' },
+        h3: { fontSize: rem(1), lineHeight: '1.4' },
+        h4: { fontSize: rem(1), lineHeight: '1.4' },
       },
     },
     defaultRadius: def.radius,
+    // Badges default to a fixed 11px; keep them on the small step of the type scale.
+    components: { Badge: Badge.extend({ styles: { root: { fontSize: 'var(--mantine-font-size-xs)' } } }) },
   });
 }
 
@@ -102,7 +120,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
   const theme = useMemo(() => mantineTheme(def, mode), [def, mode]);
   const cssResolver = useMemo(() => resolver(def), [def]);
   const value = useMemo<AppThemeContext>(
-    () => ({ def, palette: def[mode], themes: THEMES, themeId: def.id, setThemeId: (id) => setThemeId(id), preference, setPreference, mode }),
+    () => ({ def, palette: def[mode], themes: THEMES, themeId: def.id, setThemeId: (id) => setThemeId(id), preference, setPreference, mode, toolLabel: (t) => def.toolNames?.[t.id] ?? t.label, navLabel: (t) => def.toolNames?.[t.id] ?? t.shortLabel ?? t.label, mainArt: (v) => (def.art?.main ? svgUrl(def.art.main(def[mode], v)) : undefined) }),
     [def, mode, preference, setPreference, setThemeId],
   );
 

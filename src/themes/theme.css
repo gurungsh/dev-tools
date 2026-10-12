@@ -8,14 +8,91 @@
 .mantine-Paper-root {
   background-color: var(--app-panel);
 }
+
+/* Sidebar links: heavier and larger than the default. */
+.mantine-NavLink-label {
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* App name in the header: uppercase, in the theme's heading font. */
+.app-brand {
+  font-size: var(--title-fz);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+:root[data-theme='mono'] .app-brand {
+  font-weight: 700;
+}
+/* VT323 has a single weight, so the terminal gets size instead of bold. */
+:root[data-theme='terminal'] .mantine-NavLink-label,
+:root[data-theme='terminal'] .mantine-NavLink-root[aria-current='page'] .mantine-NavLink-label {
+  font-weight: 400;
+}
+
+/* Theme art (SVG data URIs from ThemeDef.art). Themes without art leave these as none. */
+.mantine-AppShell-main {
+  /* One large scene per page (set inline by App), pinned to the viewport and scaled to cover it. */
+  background-image: var(--app-art-main, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+.mantine-AppShell-navbar {
+  background-image: var(--app-art-nav, none);
+}
+/* Header art is trimmed to a thin strip along the bottom edge so it never runs behind the app name. */
+.mantine-AppShell-header::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 16px;
+  background-image: var(--app-art-header, none);
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  pointer-events: none;
+}
+/* Card art sits under the card text and is toned down, so descriptions stay legible over it. */
+.mantine-Card-root {
+  position: relative;
+  isolation: isolate;
+}
+.mantine-Card-root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--app-art-card, none);
+  background-repeat: no-repeat;
+  background-position: right top;
+  opacity: 0.5;
+  pointer-events: none;
+}
+/* Text blocks that sit directly on the page scene or sidebar art get a translucent plate behind them. */
+.page-scrim {
+  padding: 16px;
+  border-radius: var(--mantine-radius-default);
+  background: color-mix(in srgb, var(--app-bg) 80%, transparent);
+  backdrop-filter: blur(3px);
+}
+.nav-footer {
+  padding: 8px;
+  border-radius: var(--mantine-radius-default);
+  background: color-mix(in srgb, var(--app-panel) 82%, transparent);
+}
 .mantine-Input-input[data-variant='default'],
 .mantine-Select-input[data-variant='default'] {
   --input-bg: var(--app-panel);
 }
-.mantine-NavLink-root[data-active] {
+.mantine-NavLink-root[aria-current='page'] {
   background-color: var(--app-hover);
   color: var(--app-text);
-  font-weight: 500;
+}
+.mantine-NavLink-root[aria-current='page'] .mantine-NavLink-label {
+  font-weight: 700;
 }
 .mantine-NavLink-root:hover {
   background-color: var(--app-hover);
@@ -62,4 +139,103 @@
   .logo-flame-core {
     animation: none;
   }
+}
+
+/* Terminal theme: faint phosphor glow on text, dark mode only. */
+:root[data-theme='terminal'][data-mantine-color-scheme='dark'] body {
+  text-shadow: 0 0 4px color-mix(in srgb, var(--app-text) 45%, transparent);
+}
+
+/* Comic theme: bold outlines and hard offset shadows on panels. */
+:root[data-theme='comic'] .mantine-Card-root,
+:root[data-theme='comic'] .mantine-Paper-root {
+  border: 2px solid var(--app-border);
+  box-shadow: 4px 4px 0 var(--app-border);
+}
+:root[data-theme='comic'] .mantine-AppShell-navbar {
+  background-size: 24px 24px;
+}
+
+
+/* Synthwave theme: neon sunset scene fixed behind the page, glow in dark mode, wide uppercase headings. */
+:root[data-theme='synthwave'] .mantine-AppShell-navbar {
+  background-size: 40px 40px;
+}
+:root[data-theme='synthwave'] .mantine-Title-root {
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+:root[data-theme='synthwave'][data-mantine-color-scheme='dark'] .mantine-Title-root {
+  text-shadow: 0 0 10px color-mix(in srgb, var(--app-accent) 70%, transparent);
+}
+:root[data-theme='synthwave'][data-mantine-color-scheme='dark'] .mantine-Card-root,
+:root[data-theme='synthwave'][data-mantine-color-scheme='dark'] .mantine-Paper-root {
+  box-shadow: 0 0 14px color-mix(in srgb, var(--app-accent) 30%, transparent);
+}
+
+
+
+/* Brutalism theme: crude shapes, hatching, a sawtooth header edge, thick borders, hard shadows, no transitions. Bungee has a single weight. */
+:root[data-theme='brutalism'] .mantine-AppShell-navbar {
+  background-size: 16px 16px;
+}
+:root[data-theme='brutalism'] .mantine-Title-root {
+  font-weight: 400;
+  text-transform: uppercase;
+}
+:root[data-theme='brutalism'] .mantine-Card-root,
+:root[data-theme='brutalism'] .mantine-Paper-root {
+  border: 3px solid var(--app-border);
+  box-shadow: 6px 6px 0 var(--app-border);
+}
+:root[data-theme='brutalism'] .mantine-Card-root[href] {
+  transition: none;
+}
+
+/* Themes with sidebar art: nav links sit on translucent panels so the art stays faint behind their text. */
+:root:not([data-theme='mono'], [data-theme='terminal']) .mantine-NavLink-root {
+  background-color: color-mix(in srgb, var(--app-panel) 65%, transparent);
+  margin-bottom: 4px;
+}
+:root:not([data-theme='mono'], [data-theme='terminal']) .mantine-NavLink-root:hover {
+  background-color: color-mix(in srgb, var(--app-accent) 20%, transparent);
+}
+/* Selected: stronger accent tint plus a solid accent bar on the left edge. */
+:root:not([data-theme='mono'], [data-theme='terminal']) .mantine-NavLink-root[aria-current='page'] {
+  background-color: color-mix(in srgb, var(--app-accent) 38%, transparent);
+  box-shadow: inset 4px 0 0 var(--app-accent);
+}
+
+/* Anthropomorphic: chunky outlines, big radius. Chewy has a single weight. */
+:root[data-theme='anthropomorphic'] .mantine-Title-root {
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+:root[data-theme='anthropomorphic'] .mantine-Card-root,
+:root[data-theme='anthropomorphic'] .mantine-Paper-root {
+  border: 3px solid var(--app-border);
+}
+
+/* Medieval: illuminated frame (outer border plus an inset hairline). Pirata One has a single weight. */
+:root[data-theme='medieval'] .mantine-Title-root {
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+:root[data-theme='medieval'] .mantine-Card-root,
+:root[data-theme='medieval'] .mantine-Paper-root {
+  border: 2px solid var(--app-border);
+  outline: 1px solid var(--app-border);
+  outline-offset: -7px;
+}
+
+/* Memphis: black outlines with a teal (yellow at night) offset shadow. Righteous has a single weight. */
+:root[data-theme='memphis'] .mantine-Title-root {
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+:root[data-theme='memphis'] .mantine-Card-root,
+:root[data-theme='memphis'] .mantine-Paper-root {
+  border: 3px solid var(--app-border);
+  box-shadow: 5px 5px 0 var(--app-flame-core);
 }

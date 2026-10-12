@@ -3,3 +3,7 @@ dist
 *.local
 .DS_Store
 .claude
+dist-single
+build
+release
+dist-app

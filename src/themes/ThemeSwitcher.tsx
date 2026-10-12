@@ -1,0 +1,58 @@
+import { Button, ColorSwatch, Select, SegmentedControl, Stack, Center, VisuallyHidden, Text } from '@mantine/core';
+import { IconDeviceDesktop, IconMoon, IconPlus, IconSun } from '@tabler/icons-react';
+import { useAppTheme } from './ThemeProvider';
+import type { ModePreference } from './types';
+
+/** Theme picker (hidden when the build has a single theme) and light/dark/system toggle, as two matching labeled controls. */
+export function ThemeSwitcher() {
+  const { themes, themeId, setThemeId, preference, setPreference, palette, canInstallPacks, installPacks } = useAppTheme();
+  const modeItem = (value: ModePreference, label: string, icon: React.ReactNode) => ({
+    value,
+    label: (
+      <Center>
+        {icon}
+        <VisuallyHidden>{label}</VisuallyHidden>
+      </Center>
+    ),
+  });
+
+  return (
+    <Stack gap="xs">
+      {themes.length > 1 && (
+        <div>
+          <Text id="theme-label" size="xs" fw={500} mb={4}>Theme</Text>
+          <Select
+            size="xs"
+            aria-labelledby="theme-label"
+            allowDeselect={false}
+            value={themeId}
+            onChange={(v) => v && setThemeId(v as typeof themeId)}
+            data={themes.map((t) => ({ value: t.id, label: t.label }))}
+            leftSection={<ColorSwatch size={12} color={palette.accent} withShadow={false} />}
+            comboboxProps={{ position: 'top', withinPortal: true }}
+          />
+          {canInstallPacks && (
+            <Button variant="subtle" size="xs" mt={4} px={4} leftSection={<IconPlus size={14} />} onClick={() => void installPacks()}>
+              Install theme pack…
+            </Button>
+          )}
+        </div>
+      )}
+      <div>
+        <Text id="appearance-label" size="xs" fw={500} mb={4}>Appearance</Text>
+        <SegmentedControl
+          fullWidth
+          size="xs"
+          aria-labelledby="appearance-label"
+          value={preference}
+          onChange={(v) => setPreference(v as ModePreference)}
+          data={[
+            modeItem('light', 'Light', <IconSun size={14} />),
+            modeItem('dark', 'Dark', <IconMoon size={14} />),
+            modeItem('system', 'System', <IconDeviceDesktop size={14} />),
+          ]}
+        />
+      </div>
+    </Stack>
+  );
+}

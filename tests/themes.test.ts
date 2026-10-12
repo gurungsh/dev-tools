@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { THEMES, getTheme, DEFAULT_THEME_ID } from '../src/themes';
+import { tools } from '../src/app/registry';
 import { contrast, darkScale, mix, onColor, shades } from '../src/themes/colors';
 
 const HEX = /^#[0-9a-f]{6}$/i;
 
 describe('theme registry', () => {
   it('contains the configured themes in order', () => {
-    expect(THEMES.map((t) => t.id)).toEqual(['mono']);
+    expect(THEMES.map((t) => t.id)).toEqual(['mono', 'terminal', 'comic', 'synthwave', 'brutalism', 'anthropomorphic', 'medieval', 'memphis']);
   });
   it('falls back to the default theme for unknown ids', () => {
     expect(getTheme('nope').id).toBe(DEFAULT_THEME_ID);
@@ -20,6 +21,7 @@ describe.each(THEMES.map((t) => [t.id, t] as const))('%s theme', (_id, def) => {
     expect(def.fonts.mono).toBeTruthy();
     expect(def.radius).toBeGreaterThanOrEqual(0);
     expect(def.logo).toContain('<');
+    for (const id of Object.keys(def.toolNames ?? {})) expect(tools.map((t) => t.id), `toolNames.${id}`).toContain(id);
     expect(def.logo.match(/var\(--app-[a-z-]+\)/g)?.length ?? 0).toBeGreaterThan(0);
   });
 

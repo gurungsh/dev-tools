@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Button, Grid, Group, Loader, Select, Stack, Text, ActionIcon, Box } from '@mantine/core';
+import { Button, Grid, Group, Loader, Select, Stack, Text, ActionIcon, Box } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { useAppTheme } from '../../themes/ThemeProvider';
 import { notifications } from '@mantine/notifications';
-import { IconAlertCircle, IconDownload, IconWand, IconZoomIn, IconZoomOut, IconZoomReset } from '@tabler/icons-react';
+import { IconDownload, IconWand, IconZoomIn, IconZoomOut, IconZoomReset } from '@tabler/icons-react';
 import { PanelHeader } from '../../components/Page';
 import { CodeEditor, PANEL_HEIGHT } from '../../components/CodeEditor';
+import { Notice } from '../../components/Notice';
 import { CopyButton } from '../../components/CopyButton';
 import { downloadText, OpenFileButton } from '../../components/FileButton';
 import { formatMermaid } from '../../lib/mermaidFormat';
@@ -72,9 +73,9 @@ export default function MermaidTool() {
         <CopyButton value={code} label="Copy code" />
       </Group>
       {error && (
-        <Alert color="red" icon={<IconAlertCircle size={16} />} title="Syntax error">
+        <Notice kind="error" title="Syntax error">
           <Text size="sm" style={{ whiteSpace: 'pre-wrap', fontFamily: 'var(--mantine-font-family-monospace)' }}>{error}</Text>
-        </Alert>
+        </Notice>
       )}
       <Grid>
         <Grid.Col span={{ base: 12, md: 5 }}>

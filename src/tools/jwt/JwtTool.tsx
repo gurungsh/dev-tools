@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Alert, Stack, Text, Textarea, Title } from '@mantine/core';
+import { Stack, Text, Textarea, Title } from '@mantine/core';
+import { Notice } from '../../components/Notice';
+import { EmptyState } from '../../components/EmptyState';
 import { CodeEditor } from '../../components/CodeEditor';
 import { CopyButton } from '../../components/CopyButton';
+import { IconKey } from '@tabler/icons-react';
 import { decodeJwt } from '../../lib/jwt';
 import { cmExtensions } from '../../lib/cmLanguages';
 
@@ -32,13 +35,14 @@ export default function JwtTool() {
   return (
     <Stack>
       <Textarea label="Token" placeholder="Paste a JWT" autosize minRows={4} value={token} onChange={(e) => setToken(e.currentTarget.value)} />
-      {result?.error && <Alert color="red">{result.error}</Alert>}
+      {!result && <EmptyState icon={<IconKey size={28} />} title="No token yet">Paste a JWT above to see its header, payload and expiry. Nothing leaves your browser.</EmptyState>}
+      {result?.error && <Notice kind="error">{result.error}</Notice>}
       {result?.decoded && (
         <>
-          <Text size="sm" c="dimmed">Decoded only. The signature is not verified. {exp}</Text>
-          <Title order={3}>Header</Title>
+          <Text size="sm" c="dimmed" maw="65ch">Decoded only. The signature is not verified. {exp}</Text>
+          <Title order={2} size="h3">Header</Title>
           <CodeEditor value={pretty(result.decoded.header)} readOnly extensions={jsonExt} minHeight="100px" />
-          <Title order={3}>Payload</Title>
+          <Title order={2} size="h3">Payload</Title>
           <CopyButton value={pretty(result.decoded.payload)} label="Copy payload" />
           <CodeEditor value={pretty(result.decoded.payload)} readOnly extensions={jsonExt} minHeight="200px" />
         </>

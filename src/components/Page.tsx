@@ -1,14 +1,17 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Box, Group, Stack, Text, Title } from '@mantine/core';
 
 /** Shared page frame: constrained width, title, description, then content. */
 export function Page({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+  useEffect(() => {
+    document.title = title === 'Dev Tools' ? title : `${title} · Dev Tools`;
+  }, [title]);
   return (
-    <Box maw={1280} mx="auto">
+    <Box maw={1280} mx="auto" className="page-scrim">
       <Stack gap="lg">
         <Stack gap={4}>
           <Title order={1}>{title}</Title>
-          {description && <Text c="dimmed" maw={720}>{description}</Text>}
+          {description && <Text c="dimmed" maw="65ch">{description}</Text>}
         </Stack>
         {children}
       </Stack>

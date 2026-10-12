@@ -27,7 +27,7 @@ export default function HashTool() {
       <TextInput label={`${algorithm} digest`} value={shown} readOnly styles={{ input: { fontFamily: 'var(--mantine-font-family-monospace)' } }} />
       <Group>
         <CopyButton value={shown} label="Copy digest" />
-        <Text size="sm" c="dimmed">MD5 is not offered: the browser's Web Crypto API does not include it.</Text>
+        <Text size="sm" c="dimmed" maw="65ch">MD5 is not offered: the browser's Web Crypto API does not include it.</Text>
       </Group>
     </Stack>
   );

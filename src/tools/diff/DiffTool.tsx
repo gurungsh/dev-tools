@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Alert, Badge, Checkbox, Grid, Group, SegmentedControl, Stack, Button } from '@mantine/core';
+import { Badge, Checkbox, Grid, Group, SegmentedControl, Stack, Button } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
-import { IconArrowsExchange } from '@tabler/icons-react';
+import { IconArrowsExchange, IconGitCompare } from '@tabler/icons-react';
+import { Notice } from '../../components/Notice';
+import { EmptyState } from '../../components/EmptyState';
+import { Hint } from '../../components/Hint';
 import { PanelHeader } from '../../components/Page';
 import { CodeEditor } from '../../components/CodeEditor';
 import { CopyButton } from '../../components/CopyButton';
@@ -65,9 +68,9 @@ export default function DiffTool() {
       </Grid>
 
       <Group>
-        <Checkbox label="Ignore whitespace" checked={ignoreWhitespace} onChange={(e) => setIgnoreWhitespace(e.currentTarget.checked)} />
-        <Checkbox label="Ignore case" checked={ignoreCase} onChange={(e) => setIgnoreCase(e.currentTarget.checked)} />
-        <Checkbox label="Format both first" checked={formatFirst} onChange={(e) => setFormatFirst(e.currentTarget.checked)} />
+        <Hint label="Treat lines that differ only in spaces or tabs as equal."><Checkbox label="Ignore whitespace" checked={ignoreWhitespace} onChange={(e) => setIgnoreWhitespace(e.currentTarget.checked)} /></Hint>
+        <Hint label="Treat upper and lower case letters as equal."><Checkbox label="Ignore case" checked={ignoreCase} onChange={(e) => setIgnoreCase(e.currentTarget.checked)} /></Hint>
+        <Hint label="Pretty-print both sides first (JSON, YAML, XML and more), so layout differences don't show up as changes."><Checkbox label="Format both first" checked={formatFirst} onChange={(e) => setFormatFirst(e.currentTarget.checked)} /></Hint>
         <SegmentedControl value={mode} onChange={(v) => setMode(v as 'split' | 'inline')} data={[{ label: 'Side by side', value: 'split' }, { label: 'Inline', value: 'inline' }]} />
         <Button variant="default" leftSection={<IconArrowsExchange size={16} />} onClick={() => { setLeft(right); setRight(left); setLeftName(rightName); setRightName(leftName); }}>
           Swap
@@ -75,7 +78,7 @@ export default function DiffTool() {
         <CopyButton value={unifiedPatch(prepared.a, prepared.b)} label="Copy unified diff" disabled={!hasInput || result.identical} />
       </Group>
 
-      {prepared.note && <Alert color="yellow">{prepared.note}</Alert>}
+      {prepared.note && <Notice kind="warning">{prepared.note}</Notice>}
 
       {hasInput && (
         <Group gap="xs">
@@ -85,6 +88,7 @@ export default function DiffTool() {
           {result.identical && <Badge color="gray">Identical</Badge>}
         </Group>
       )}
+      {!hasInput && <EmptyState icon={<IconGitCompare size={28} />} title="Nothing to compare yet">Paste text into both panels, or open two files, to see what changed.</EmptyState>}
       {hasInput && !result.identical && <DiffView result={result} mode={mode} />}
     </Stack>
   );

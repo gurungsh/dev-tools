@@ -1,4 +1,17 @@
 {
-  "ids": ["mono"],
-  "default": "mono"
+  "ids": [
+    "mono",
+    "terminal",
+    "comic",
+    "synthwave",
+    "brutalism",
+    "anthropomorphic",
+    "medieval",
+    "memphis"
+  ],
+  "default": "mono",
+  "core": [
+    "mono",
+    "terminal"
+  ]
 }

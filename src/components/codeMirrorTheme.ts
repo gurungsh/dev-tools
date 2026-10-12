@@ -21,6 +21,8 @@ export function codeMirrorTheme(def: ThemeDef, mode: Mode): Extension {
       gutterForeground: p.dimmed,
       gutterBorder: 'transparent',
       fontFamily: def.fonts.mono,
+      // Fixed size so code looks the same in every theme, whatever the theme's fontScale.
+      fontSize: '12px',
     },
     styles: [
       { tag: [t.comment, t.lineComment, t.blockComment, t.docComment], color: s.comment, fontStyle: 'italic' },

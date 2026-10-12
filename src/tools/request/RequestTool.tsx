@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Alert, Button, Checkbox, Group, NumberInput, Select, Stack, Table, Tabs, Text, Badge } from '@mantine/core';
+import { Button, Checkbox, Group, NumberInput, Select, Stack, Table, Tabs, Text, Badge } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
-import { IconAlertCircle, IconDice5, IconWand } from '@tabler/icons-react';
+import { IconDice5, IconWand } from '@tabler/icons-react';
+import { Notice } from '../../components/Notice';
 import { PanelHeader } from '../../components/Page';
 import { CodeEditor } from '../../components/CodeEditor';
 import { CopyButton } from '../../components/CopyButton';
@@ -49,7 +50,7 @@ function SampleMode({ opts, setOpts, count, setCount }: ModeProps) {
     <Stack>
       <Text size="sm" c="dimmed">Paste a sample JSON body. New values are generated with the same shape, types and formats.</Text>
       <OptionsBar opts={opts} setOpts={setOpts} count={count} setCount={setCount} showExamples={false} />
-      {parsed.error && input.trim() && <Alert color="red" icon={<IconAlertCircle size={16} />}>Invalid JSON: {parsed.error}</Alert>}
+      {parsed.error && input.trim() && <Notice kind="error">Invalid JSON: {parsed.error}</Notice>}
       <Group grow align="flex-start">
         <Stack gap={0}>
           <PanelHeader label="Sample JSON">
@@ -104,7 +105,7 @@ function OpenApiMode({ opts, setOpts, count, setCount }: ModeProps) {
     <Stack>
       <Text size="sm" c="dimmed">Paste a Swagger 2.0 / OpenAPI 3.x document (JSON or YAML), pick an endpoint and generate a request. Only local <code>#/…</code> references are resolved.</Text>
       <OptionsBar opts={opts} setOpts={setOpts} count={count} setCount={setCount} showExamples />
-      {parsed.error && <Alert color="red" icon={<IconAlertCircle size={16} />}>{parsed.error}</Alert>}
+      {parsed.error && <Notice kind="error">{parsed.error}</Notice>}
       <Group grow align="flex-start">
         <Stack gap={0}>
           <PanelHeader label={parsed.spec?.title ?? 'OpenAPI / Swagger document'}>

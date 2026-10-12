@@ -17,6 +17,8 @@ export function App() {
   const art = useMemo(() => mainArt(tools.findIndex((t) => t.path === pathname) + 1), [mainArt, pathname]);
 
   return (
+    <>
+    <a className="skip-link" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
     <AppShell
       header={{ height: 52 }}
       navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !opened } }}
@@ -51,7 +53,7 @@ export function App() {
         </AppShell.Section>
       </AppShell.Navbar>
 
-      <AppShell.Main style={{ '--app-art-main': art } as CSSProperties}>
+      <AppShell.Main id="main" tabIndex={-1} style={{ '--app-art-main': art } as CSSProperties}>
         <Suspense fallback={<Center h={200}><Loader /></Center>}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -63,5 +65,6 @@ export function App() {
         </Suspense>
       </AppShell.Main>
     </AppShell>
+    </>
   );
 }

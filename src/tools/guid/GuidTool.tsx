@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Button, Checkbox, Group, NumberInput, SegmentedControl, Stack, Text, TextInput, Title, Alert } from '@mantine/core';
+import { Button, Checkbox, Group, NumberInput, SegmentedControl, Stack, Text, TextInput, Title } from '@mantine/core';
 import { IconRefresh } from '@tabler/icons-react';
 import { CodeEditor } from '../../components/CodeEditor';
+import { Notice } from '../../components/Notice';
 import { CopyButton } from '../../components/CopyButton';
 import { generateGuids, inspectGuid, type GuidOptions, type GuidVersion } from '../../lib/guid';
 
@@ -53,9 +54,9 @@ export default function GuidTool() {
       </Group>
       <CodeEditor value={text} readOnly minHeight="200px" />
 
-      <Title order={3} mt="md">Validate a GUID</Title>
-      <TextInput placeholder="Paste a GUID to inspect" value={check} onChange={(e) => setCheck(e.currentTarget.value)} />
-      {info === null && <Alert color="red">Not a valid GUID.</Alert>}
+      <Title order={2} size="h3" mt="md">Validate a GUID</Title>
+      <TextInput aria-label="GUID to validate" placeholder="Paste a GUID to inspect" value={check} onChange={(e) => setCheck(e.currentTarget.value)} />
+      {info === null && <Notice kind="error">Not a valid GUID.</Notice>}
       {info && (
         <Text size="sm">
           Valid GUID. {info.nil ? 'Nil UUID.' : `Version ${info.version}.`} Variant: {info.variantRfc ? 'RFC 4122/9562' : 'other'}.

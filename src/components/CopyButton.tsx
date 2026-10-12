@@ -11,7 +11,7 @@ export function CopyButton({ value, label = 'Copy', disabled }: { value: string;
           leftSection={copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
           onClick={copy}
         >
-          {copied ? 'Copied' : label}
+          <span aria-live="polite">{copied ? 'Copied' : label}</span>
         </Button>
       )}
     </MantineCopyButton>

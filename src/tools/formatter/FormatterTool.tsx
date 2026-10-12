@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Button, Checkbox, Grid, Group, NumberInput, Select, Stack, Text } from '@mantine/core';
+import { Button, Checkbox, Grid, Group, NumberInput, Select, Stack, Text } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
-import { IconAlertCircle, IconArrowsExchange, IconDownload, IconWand } from '@tabler/icons-react';
+import { IconArrowsExchange, IconDownload, IconWand } from '@tabler/icons-react';
 import { CodeEditor } from '../../components/CodeEditor';
 import { PanelHeader } from '../../components/Page';
+import { Notice } from '../../components/Notice';
 import { CopyButton } from '../../components/CopyButton';
 import { downloadText, OpenFileButton } from '../../components/FileButton';
 import { cmExtensions } from '../../lib/cmLanguages';
@@ -96,9 +97,9 @@ export default function FormatterTool() {
         <Button variant="subtle" color="red" onClick={() => { setInput(''); setOutput(''); setError(null); setFilename(undefined); }}>Clear</Button>
       </Group>
       {shownError && (
-        <Alert color="red" icon={<IconAlertCircle size={16} />} title="Invalid input">
+        <Notice kind="error" title="Invalid input">
           <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{shownError}</Text>
-        </Alert>
+        </Notice>
       )}
       <Grid>
         <Grid.Col span={{ base: 12, md: 6 }}>

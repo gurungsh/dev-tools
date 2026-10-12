@@ -7,7 +7,7 @@ const DEL = 'var(--mantine-color-red-light)';
 const ADD_STRONG = 'var(--mantine-color-green-light-hover)';
 const DEL_STRONG = 'var(--mantine-color-red-light-hover)';
 
-const mono: CSSProperties = { fontFamily: 'var(--mantine-font-family-monospace)', fontSize: 13, whiteSpace: 'pre-wrap', wordBreak: 'break-all' };
+const mono: CSSProperties = { fontFamily: 'var(--mantine-font-family-monospace)', fontSize: 12, whiteSpace: 'pre-wrap', wordBreak: 'break-all' };
 const numStyle: CSSProperties = { ...mono, width: 44, textAlign: 'right', padding: '0 8px', color: 'var(--mantine-color-dimmed)', userSelect: 'none', verticalAlign: 'top' };
 
 function content(cell: Cell | undefined, strong: string): ReactNode {

@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Alert, Checkbox, Group, SegmentedControl, Stack, Textarea } from '@mantine/core';
+import { Checkbox, Group, SegmentedControl, Stack, Textarea } from '@mantine/core';
+import { Notice } from '../../components/Notice';
+import { Hint } from '../../components/Hint';
 import { CopyButton } from '../../components/CopyButton';
 import { decodeBase64, encodeBase64 } from '../../lib/base64';
 
@@ -20,10 +22,10 @@ export default function Base64Tool() {
     <Stack>
       <Group>
         <SegmentedControl value={mode} onChange={(v) => setMode(v as 'encode' | 'decode')} data={[{ label: 'Encode', value: 'encode' }, { label: 'Decode', value: 'decode' }]} />
-        <Checkbox label="URL-safe" disabled={mode === 'decode'} checked={urlSafe} onChange={(e) => setUrlSafe(e.currentTarget.checked)} />
+        <Hint label="Use - and _ instead of + and /, and drop the = padding, so the result is safe in URLs and filenames. Applies when encoding."><Checkbox label="URL-safe" disabled={mode === 'decode'} checked={urlSafe} onChange={(e) => setUrlSafe(e.currentTarget.checked)} /></Hint>
       </Group>
-      <Textarea label="Input" autosize minRows={6} value={input} onChange={(e) => setInput(e.currentTarget.value)} />
-      {result.error ? <Alert color="red">{result.error}</Alert> : <Textarea label="Output" autosize minRows={6} readOnly value={result.text} />}
+      <Textarea label="Input" placeholder={mode === 'encode' ? 'Type or paste text to encode' : 'Paste Base64 to decode'} autosize minRows={6} value={input} onChange={(e) => setInput(e.currentTarget.value)} />
+      {result.error ? <Notice kind="error">{result.error}</Notice> : <Textarea label="Output" placeholder="The result appears here" autosize minRows={6} readOnly value={result.text} />}
       <Group>
         <CopyButton value={result.text ?? ''} label="Copy output" disabled={!!result.error} />
       </Group>

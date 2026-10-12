@@ -239,3 +239,65 @@
   border: 3px solid var(--app-border);
   box-shadow: 5px 5px 0 var(--app-flame-core);
 }
+
+/* ---- Accessibility and interaction polish (all themes) ---- */
+
+/* Skip link: hidden until a keyboard user tabs to it. */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1000;
+  padding: 8px 16px;
+  background: var(--app-accent);
+  color: var(--app-on-accent);
+  border-radius: var(--mantine-radius-default);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: none;
+}
+.mantine-AppShell-main:focus {
+  outline: none;
+}
+
+/* A visible focus ring in the accent color for the editors, which draw their own. */
+.cm-editor.cm-focused {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 1px;
+}
+
+/* Smooth state changes on controls. */
+.mantine-Button-root,
+.mantine-NavLink-root,
+.mantine-SegmentedControl-label,
+.mantine-Input-input,
+.mantine-Checkbox-input {
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+/* Honor the OS "reduce motion" setting everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Keep every piece of text on the three-step scale (12 / 16 / 22). */
+:root {
+  /* Mantine derives input helper and error text as "UI size minus 2px" (11px); use the small step instead. */
+  --input-description-size: var(--mantine-font-size-xs);
+  --input-error-size: var(--mantine-font-size-xs);
+  --input-success-size: var(--mantine-font-size-xs);
+}
+/* Inline code in descriptions and tables: the theme's mono font at the small step, like Mantine's <Code>. */
+code {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-xs);
+}

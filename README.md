@@ -2,66 +2,35 @@
 
 An offline-first developer toolbox that runs entirely in the browser. It is a React + Vite + TypeScript single page application with no backend and no network calls at runtime. Everything is bundled, so you can open it from `localhost`, a static file server, or (in single-file build mode) straight from disk.
 
-## Features
+## Documentation
 
-| # | Tool | What it does |
-|---|------|--------------|
-| 1 | **Formatter** | Pretty-print, minify and validate JSON, YAML, XML, Mermaid (and later HTML, CSS, SQL, Markdown) |
-| 2 | **Request Generator** | Generate dummy request bodies from a sample JSON or a Swagger/OpenAPI schema |
-| 3 | **Diff Checker** | Side-by-side and inline diff between two texts or files |
-| 4 | **GUID Generator** | Generate one or many GUIDs/UUIDs, with format options |
-| 5 | **Mermaid Renderer** | Live-render Mermaid diagrams, export as SVG/PNG |
-| 6 | **Base64** | Encode and decode Base64 text |
-| 7 | **Hash Generator** | Compute SHA hashes of text |
-| 8 | **JWT Decoder** | Decode and inspect JSON Web Tokens |
-
-## Offline principles
-
-These rules keep the app usable with no internet:
-
-- **No CDN assets.** Every script, stylesheet, font and icon comes from `node_modules` and is bundled by Vite. No Google Fonts, no `<script src="https://...">`.
-- **No runtime network calls.** No analytics, telemetry or remote APIs. Files are read with the File API and never uploaded.
-- **Everything runs client-side.** Formatting, diffing, schema sampling, Base64, hashing, JWT decoding and Mermaid rendering all happen in the browser.
-- **Lazy-load the heavy parts.** Mermaid is several MB, so it is loaded with a dynamic `import()` the first time the tool is opened. This is still local and still works offline.
-- **Optional single-file build.** `vite-plugin-singlefile` inlines all JS/CSS into one `index.html` that can be opened by double-click or shared by copy.
-- **Persist state locally.** Last inputs and settings are stored in `localStorage`.
-- **Verify offline.** CI/manual check: build, disconnect the network, and run every tool.
-
-## Tech stack
-
-| Concern | Choice | Notes |
-|---------|--------|-------|
-| Framework | React 18 + TypeScript | |
-| Build | Vite | `base: './'` so it works from any path |
-| Routing | `react-router-dom` with `HashRouter` | Works on static hosting and `file://` |
-| Editor | CodeMirror 6 | Lightweight, no web workers or CDN loading (Monaco is harder to run offline) |
-| Formatting | `prettier` (standalone) + `@prettier/plugin-xml`, `sql-formatter` | XML, HTML, CSS, Markdown, SQL (JSON uses `JSON.stringify`, YAML uses `yaml`) |
-| YAML parsing | `yaml` | Validation and JSON <-> YAML conversion |
-| Mermaid | `mermaid` | Rendering. Formatting is a small custom indenter since Prettier has no Mermaid support |
-| Diff | `diff` (jsdiff) and `@codemirror/merge` | Line and word level, side-by-side view |
-| Sample data | Own seeded generator (`src/lib/sampleGen.ts`) | Schema/OpenAPI to dummy values, repeatable via seed |
-| GUID | `crypto.randomUUID()` with a `crypto.getRandomValues` fallback | No extra dependency |
-| Hash | Web Crypto `crypto.subtle.digest` | SHA family only (no MD5); no extra dependency |
-| Base64 / JWT | Own code in `src/lib` | JWTs are decoded only, never verified |
-| UI | Mantine 8 | Theming via `createTheme`; fonts bundled with `@fontsource` (no CDN) |
-| Tests | Vitest | Unit tests for all `src/lib` logic |
+- [Architecture](docs/architecture.md): features, offline principles, tech stack, project structure
+- [Roadmap](docs/roadmap.md)
 
 ## Themes
 
-Pick light/dark/system mode from the bottom of the sidebar; the choice is remembered. Only the Mono theme ships right now, so the theme picker is hidden; it appears again when a build has more than one theme.
+Pick light/dark/system mode from the bottom of the sidebar; the choice is remembered. The theme picker is hidden when a build includes only one theme.
 
 | Theme | Look |
 |-------|------|
 | Mono | Black and white, hairline borders (default) |
+| Terminal | Retro green-screen: phosphor green on black (pale green "paper" in light mode), VT323 pixel font for the UI and IBM Plex Mono in code, square corners |
+| Comic | Pop-art comic book: primary yellow page with blue accents and red bursts (night-sky navy with yellow in dark mode), Comic Neue text, Bangers headings, heavy outlines and hard shadows, a big ragged explosion with speed lines and halftone dots behind each page |
+| Synthwave | 1980s neon: hot pink and cyan on midnight purple (pastel lavender in light mode), Chakra Petch text, Audiowide headings, a neon sunset grid behind the page, glowing edges in dark mode |
+| Brutalism | Raw and stark: black and white with electric blue (yellow in dark mode), Space Mono text, Bungee headings, crude oversized shapes, thick borders and hard shadows |
+| Anthropomorphic | Retro cartoon mascots, everything has a face: flat tomato, mustard and teal on cream (navy at night), Fredoka text, Chewy headings, bold outlines, smiling sun/cloud/tomato backgrounds and awning scallops |
+| Medieval | Illuminated manuscript: parchment, heraldic crimson and gold (a torch-lit stone hall in dark mode), EB Garamond text, Pirata One blackletter headings, a castle skyline, gold sun and a big shield, crossed swords or rose window behind each page |
+| Memphis | 1980s Milan: hot pink, teal and yellow with black outlines on cream (deep purple at night), Poppins text, Righteous headings, squiggles, triangles, zigzags and terrazzo confetti |
 
-Each theme lives in `src/themes/defs/<id>.ts` (palette for light and dark, fonts, radius, logo). To add one, create a def, list it in `src/themes/index.ts` and `scripts/make-icon.ts`, add its id to `ThemeId` in `src/themes/types.ts` and to `config/themes.json` (which drives the `__THEME_<ID>__` flags in `vite.config.ts`), and declare the flag in `src/themes/globals.d.ts`. Contrast of every palette is checked by `tests/themes.test.ts`.
+Each theme lives in `src/themes/defs/<id>.ts` (palette for light and dark, fonts, radius, logo). To add one, create a def, list it in `src/themes/index.ts` and `scripts/make-icon.ts`, add its id to `ThemeId` in `src/themes/types.ts` and to `config/themes.json` (which drives the `__THEME_<ID>__` flags in `vite.config.ts`), and declare the flag in `src/themes/globals.d.ts`. A theme can add SVG backgrounds with `art`: the sidebar, header and home cards get small tiles or corner pieces, and the page gets one large non-repeating scene (`main`, built with `scene()` from `src/themes/art.ts`) whose layout differs per page. All are functions of the palette, so they follow light and dark. It can also rename the tools in the sidebar, home cards and page titles with `toolNames` (keyed by tool id from `src/app/registry.ts`); tools it doesn't list keep their default name. Contrast of every palette is checked by `tests/themes.test.ts`.
 
 ## Desktop app (macOS and Windows)
 
 The same app can be packaged with Electron. The desktop build serves the bundled app from disk and blocks every network request, so it stays fully offline.
 
 ```bash
-npm run package                                   # all themes, for the OS you're on
+npm run package                                   # core themes (Mono + Terminal) for the OS you're on, plus theme packs
+npm run package -- --theme=all                    # every theme built in, no packs needed
 npm run package -- --theme=mono                   # Mono only (light + dark), no theme picker
 npm run package -- --theme=mono --platform=win
 npm run package -- --platform=all --arch=all      # mac + windows, arm64 + x64
@@ -72,16 +41,30 @@ npm run desktop                                   # build and run the desktop ap
 
 | Flag | Values | Default |
 |------|--------|---------|
-| `--theme` | one theme, a comma list, or `all` | `all` |
+| `--theme` | one theme, a comma list, `core` or `all` | `core` |
+| `--no-packs` | skip building theme packs | off |
 | `--platform` | `mac`, `win`, `all` | current OS |
 | `--arch` | `arm64`, `x64`, `all` | mac: this machine's CPU, win: `x64` |
 | `--dir` | unpacked app only | off |
 | `--out` | output folder | `release` |
 
 What a `--theme` choice does:
-- Only the chosen themes (and their fonts) are included in the app, so single-theme installers are smaller.
+- Only the chosen themes (and their fonts) are built into the app, so installers are smaller. `core` is the list in `config/themes.json` (`"core"`: Mono and Terminal, with Mono as `"default"`).
 - A single theme hides the theme picker; the light/dark/system toggle stays. Several themes show a picker limited to those themes.
-- The app icon is generated from that theme's logo (`all` uses the default theme from `config/themes.json`).
+- The app icon is generated from the default theme's logo.
+
+### Theme packs (extra themes)
+
+Themes that are not built in are packaged as one `.devtheme` file each, written to `release/theme-packs/` when you run `npm run package` (or on their own with `npm run packs`, which writes to `dist-packs/`). A pack is a single JSON file holding the theme's code and its fonts, so it works offline.
+
+Users install a pack from the app: **Themes > Install Theme Pack…** in the menu bar, or **Install theme pack…** under the theme picker in the sidebar. The pack is copied into the app's user data folder and appears in the picker straight away; **Themes > Remove Theme Pack** deletes it. Installed packs survive app updates.
+
+```bash
+npm run packs                                       # every theme that is not in "core"
+npm run packs -- --theme=comic,medieval --out=out   # chosen themes only
+```
+
+Packs are code that runs inside the app window (which has no file or network access), so only install packs you trust. A pack whose id matches a built-in theme is ignored.
 
 Installers land in `release/`, named like `DevTools-0.1.0-mono-mac-arm64.dmg`: `.dmg` and `.zip` for macOS, `.exe` (NSIS installer) and `.zip` for Windows. Windows installers can be built from a Mac.
 
@@ -90,111 +73,6 @@ Notes:
 - Unsigned Windows builds also skip embedding the icon in the `.exe` itself (that step needs Wine off Windows); build on Windows to include it.
 - The first packaging run downloads Electron (about 100 MB), so it needs internet once. The packaged app never does.
 - The same `DEVTOOLS_THEMES=mono npm run build` also works for a themed web build.
-
-## Project structure
-
-```
-dev-tools/
-├─ src/
-│  ├─ app/              # shell, home, routing, tool registry
-│  ├─ tools/
-│  │  ├─ formatter/
-│  │  ├─ request/
-│  │  ├─ diff/
-│  │  ├─ guid/
-│  │  ├─ mermaid/
-│  │  ├─ base64/
-│  │  ├─ hash/
-│  │  └─ jwt/
-│  ├─ themes/           # theme defs, provider, switcher, logo
-│  ├─ components/       # CodeEditor, CopyButton, FileButton, Page
-│  ├─ lib/              # pure functions (format, sample, diff, base64, hash, jwt)
-│  └─ main.tsx
-├─ tests/               # Vitest unit tests for src/lib
-├─ electron/            # desktop main process
-├─ scripts/             # package.mjs, make-icon.ts, check-offline.mjs
-├─ config/themes.json   # theme ids shared by build tooling
-├─ index.html
-├─ vite.config.ts
-└─ README.md
-```
-
-Each tool is a self-contained module registered in one tool registry, so adding a tool means adding a folder and one registry entry. Core logic lives in `lib/` as pure functions so it is easy to test.
-
-## Roadmap
-
-### Phase 0 - Scaffold
-- [x] Vite + React + TypeScript project, ESLint, Prettier, Vitest
-- [x] App shell: sidebar navigation, hash routing, light/dark theme
-- [x] Shared `CodeEditor` (CodeMirror), copy/download/upload helpers
-- [x] Tool registry and lazy-loaded routes
-- [x] Offline guard: lint rule or CI check that fails on `http(s)://` asset references in the build output
-
-### Phase 1 - GUID generator (quick win)
-- [x] Generate v4 UUIDs, with count (1 to 1000)
-- [x] Options: uppercase, no hyphens, braces, quotes, comma separated
-- [x] Copy one or copy all
-- [x] Optional: v7 (time-ordered), nil UUID, validator
-
-### Phase 2 - Formatter
-- [x] JSON: format, minify, validate with line/column errors, sort keys
-- [x] YAML: format and validate, YAML <-> JSON conversion
-- [x] XML: format and validate, configurable indent
-- [x] Mermaid: basic indentation normaliser
-- [x] Auto-detect input type, indent size setting, file open
-- [ ] Drag-and-drop file open
-- [x] HTML, CSS, Markdown, SQL
-
-### Phase 3 - Diff checker
-- [x] Two-pane input with paste or file open
-- [x] Side-by-side and inline views
-- [x] Options: ignore whitespace, ignore case, word vs line diff
-- [x] Format both sides before diffing (reuses the Formatter), useful for JSON/YAML
-- [x] Stats (added, removed, changed) and copy as unified diff
-
-### Phase 4 - Mermaid renderer
-- [x] Editor with live preview, debounced
-- [x] Syntax error display
-- [ ] Pan (zoom is done; theme follows the app light/dark setting)
-- [x] Export SVG and PNG
-- [x] Sample diagram gallery (flowchart, sequence, ER, class, Gantt)
-- [ ] Confirm Mermaid runs with zero network access (no CDN icon packs or fonts)
-
-### Phase 5 - Request generator
-- [x] Two input modes, switchable in the UI:
-  - **From sample JSON:** infer a schema from the pasted payload (types, nesting, arrays), then generate new dummy values with the same shape
-  - **From OpenAPI/Swagger (JSON or YAML, v2 and v3):** pick an endpoint and method, then generate the request body, plus query/path/header parameters, from its schema
-- [x] Generate realistic dummy bodies from schema types, formats (date-time, email, uuid), enums and constraints
-- [x] Options: seed for repeatable output, include optional fields, array length
-- [x] Output: JSON body, plus `curl` and `fetch` snippets
-- [x] Bulk generation (N variations)
-- [x] Support local `$ref` resolution, `allOf`/`oneOf`/`anyOf`
-
-### Phase 6 - Polish and distribution
-- [x] Single-file build (`npm run build:single`) producing one portable `index.html`
-- [ ] Optional PWA service worker so it can be installed and used offline
-- [ ] Keyboard shortcuts and a command palette to jump between tools
-- [x] Persist per-tool state across sessions (localStorage)
-- [ ] Accessibility pass and responsive layout
-- [ ] Playwright offline smoke tests for every tool
-
-### Phase 7 - Themes and desktop app
-- [x] Multi-theme support with light and dark per theme (only Mono ships now; the other themes were removed)
-- [x] Theme picker and light/dark/system toggle at the bottom of the sidebar
-- [x] Fonts bundled locally via `@fontsource` (no network); themes and fonts not selected for a build are tree-shaken out
-- [x] Desktop app (Electron) for macOS and Windows with a `--theme` packaging option
-
-### Phase 8 - More tools
-- [x] Base64 encode/decode
-- [x] Hash generator (SHA family)
-- [x] JWT decoder
-- [x] Shared `Page` layout component for tools
-
-### Ideas / backlog
-- URL encode/decode
-- JSON path / JMESPath query, JSON to TypeScript types
-- Timestamp converter, regex tester
-- Cron expression explainer
 
 ## Getting started
 
